@@ -4,20 +4,20 @@ A beautiful, minimalist, and dynamic personal bookmark dashboard designed to ser
 
 ---
 
-## ✨ Features
+##  Features
 
-- **📂 Custom Sections**: Group your shortcuts into custom categories (e.g., Work, Entertainment, Tech) to match your workflow.
-- **↕️ Drag-and-Drop Sorting**: Seamlessly reorder bookmarks or move them between sections using fluid mouse/touch drag interactions powered by `@dnd-kit`.
-- **🔍 Adjustable Icon Sizing**: Instantly toggle between **Small (S)**, **Medium (M)**, and **Large (L)** layouts. The grid automatically adjusts to optimize your screen density.
-- **⚡ Smart Favicons**: Automatically fetches high-resolution site icons using Google's favicon API with an on-demand cache-busting refresh button.
-- **💾 Backup & Sync**: Import and export your data as a clean JSON backup file to move your bookshelf setup to any device.
-- **🌓 Browser-Matched Themes**: Built-in responsive styling that aligns with your system’s light/dark settings.
-- **🖼️ Custom Background Wallpaper**: Set any custom background image via URL with adjustable opacity blends and frosted blur filters.
-- **⏱️ Pomodoro Focus Timer**: An inline productivity timer featuring a zero-dependency synthesized bell chime alert using browser Web Audio synthesis.
+- **Custom Sections**: Group your shortcuts into custom categories (e.g., Work, Entertainment, Tech) to match your workflow.
+- **Drag-and-Drop Sorting**: Seamlessly reorder bookmarks or move them between sections using fluid mouse/touch drag interactions powered by `@dnd-kit`.
+- **Adjustable Icon Sizing**: Instantly toggle between **Small (S)**, **Medium (M)**, and **Large (L)** layouts. The grid automatically adjusts to optimize your screen density.
+- **Smart Favicons**: Automatically fetches high-resolution site icons using Google's favicon API with an on-demand cache-busting refresh button.
+- **Backup & Sync**: Import and export your data as a clean JSON backup file to move your bookshelf setup to any device.
+- **Browser-Matched Themes**: Built-in responsive styling that aligns with your system’s light/dark settings.
+- **Custom Background Wallpaper**: Set any custom background image via URL with adjustable opacity blends and frosted blur filters.
+- **Pomodoro Focus Timer**: An inline productivity timer featuring a zero-dependency synthesized bell chime alert using browser Web Audio synthesis.
 
 ---
 
-## 🚀 Running Locally
+## Running Locally
 
 ### Prerequisites
 
@@ -43,7 +43,7 @@ A beautiful, minimalist, and dynamic personal bookmark dashboard designed to ser
 
 ---
 
-## 🌐 Deployment (Vercel)
+## Deployment (Vercel)
 
 This application is ready to deploy directly to Vercel as a static Single Page Application (SPA).
 
