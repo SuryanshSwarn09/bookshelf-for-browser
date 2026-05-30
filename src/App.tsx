@@ -54,21 +54,21 @@ const gridClasses = {
 
 const addBtnSizeMap = {
   sm: {
-    container: 'w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl',
-    iconSize: 20,
-    text: 'text-[10px] sm:text-xs',
-    gap: 'gap-1 sm:gap-1.5',
+    container: 'w-12 h-12 sm:w-14 sm:h-14 rounded-xl',
+    iconSize: 18,
+    text: 'text-[10px] sm:text-xs font-sans-ui',
+    gap: 'gap-1.5 sm:gap-2',
   },
   md: {
-    container: 'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl',
-    iconSize: 32,
-    text: 'text-xs sm:text-sm',
+    container: 'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl',
+    iconSize: 26,
+    text: 'text-xs sm:text-sm font-sans-ui',
     gap: 'gap-2 sm:gap-2.5',
   },
   lg: {
     container: 'w-20 h-20 sm:w-24 sm:h-24 rounded-3xl',
-    iconSize: 40,
-    text: 'text-sm sm:text-base',
+    iconSize: 34,
+    text: 'text-sm sm:text-base font-sans-ui',
     gap: 'gap-3 sm:gap-3.5',
   }
 };
@@ -77,6 +77,7 @@ export default function App() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [sections, setSections] = useState<string[]>([]);
   const [iconSize, setIconSize] = useState<'sm' | 'md' | 'lg'>('md');
+  const [activeSection, setActiveSection] = useState<string>('All');
   const [isReady, setIsReady] = useState(false);
   
   // Modals State
@@ -163,16 +164,22 @@ export default function App() {
       setIconSize(savedIconSize);
     }
 
+    const savedActiveSection = localStorage.getItem('bookshelf-active-section');
+    if (savedActiveSection) {
+      setActiveSection(savedActiveSection);
+    }
+
     setIsReady(true);
   }, []);
 
-  // Save to localeStorage whenever bookmarks, sections or iconSize change
+  // Save to localeStorage whenever bookmarks, sections, iconSize or activeSection change
   useEffect(() => {
     if (isReady) {
       localStorage.setItem('bookshelf-data-v2', JSON.stringify({ bookmarks, sections }));
       localStorage.setItem('bookshelf-icon-size', iconSize);
+      localStorage.setItem('bookshelf-active-section', activeSection);
     }
-  }, [bookmarks, sections, iconSize, isReady]);
+  }, [bookmarks, sections, iconSize, activeSection, isReady]);
 
   const handleAddBookmark = (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,6 +225,9 @@ export default function App() {
     setSections(sections.filter(s => s !== sectionToDelete));
     // Move bookmarks from deleted section to General
     setBookmarks(bookmarks.map(b => (b.category === sectionToDelete ? { ...b, category: 'General' } : b)));
+    if (activeSection === sectionToDelete) {
+      setActiveSection('All');
+    }
   };
 
   const handleExport = () => {
@@ -286,22 +296,20 @@ export default function App() {
   if (!isReady) return null;
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-300 flex flex-col items-center w-full">
+    <div className="min-h-screen p-6 sm:p-10 md:p-14 transition-colors duration-300 flex flex-col items-center w-full animate-fade-in-up">
       {/* Header Container */}
       <div className="w-full max-w-7xl flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-6">
-        <div className="flex flex-col gap-1.5">
-          <div className="flex gap-1.5 opacity-90">
-            <div className="h-1.5 w-6 rounded-full bg-[#4285F4]"></div>
-            <div className="h-1.5 w-6 rounded-full bg-[#EA4335]"></div>
-            <div className="h-1.5 w-6 rounded-full bg-[#FBBC05]"></div>
-            <div className="h-1.5 w-6 rounded-full bg-[#34A853]"></div>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 select-none">
+            <div className="h-2 w-2 rounded-full bg-[#c85a32] dark:bg-[#d36135]"></div>
+            <span className="text-[10px] uppercase tracking-widest font-mono-ui text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50">Workspace Dashboard</span>
           </div>
-          <h1 className="text-2xl font-medium tracking-tight text-zinc-800 dark:text-zinc-100 opacity-90 select-none mt-2">
+          <h1 className="text-4xl font-serif-display italic font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1] select-none mt-1">
             Bookshelf
           </h1>
         </div>
         
-        <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
+        <div className="flex flex-wrap items-center gap-3 self-stretch sm:self-auto justify-end">
           <input
             type="file"
             accept=".json"
@@ -311,163 +319,202 @@ export default function App() {
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            className="p-1.5 rounded-lg text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
             title="Import Backup"
           >
-            <Upload size={18} />
+            <Upload size={15} />
           </button>
           <button
             onClick={handleExport}
-            className="p-2 rounded-full text-zinc-600 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            className="p-1.5 rounded-lg text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
             title="Export Backup"
           >
-            <Download size={18} />
+            <Download size={15} />
           </button>
 
           {/* Icon Size Toggle segmented control */}
-          <div className="flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-full border border-black/5 dark:border-white/5 gap-0.5" title="Icon size">
+          <div className="flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-lg border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 gap-0.5" title="Icon size">
             {(['sm', 'md', 'lg'] as const).map((size) => (
               <button
                 key={size}
                 onClick={() => setIconSize(size)}
-                className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                className={`px-2.5 py-0.5 rounded-md text-[10px] font-mono-ui font-semibold transition-all duration-200 cursor-pointer ${
                   iconSize === size
-                    ? 'bg-white dark:bg-zinc-800 text-[#4285F4] shadow-xs scale-100'
+                    ? 'bg-[#c85a32] text-white shadow-xs font-bold'
                     : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
                 }`}
                 title={`${size === 'sm' ? 'Small' : size === 'md' ? 'Medium' : 'Large'} Icons`}
               >
-                {size === 'sm' ? 'S' : size === 'md' ? 'M' : 'L'}
+                {size.toUpperCase()}
               </button>
             ))}
           </div>
 
           <button
             onClick={() => setIsSectionModalOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-[#4285F4]/10 text-[#4285F4] hover:bg-[#4285F4]/20 transition-colors text-sm font-medium"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 bg-white/40 dark:bg-zinc-900/40 hover:bg-[#c85a32]/10 dark:hover:bg-[#d36135]/10 text-xs font-mono-ui transition-all duration-200 cursor-pointer text-[#1c1c1c] dark:text-[#e5e5e1]"
           >
-            <FolderPlus size={16} />
-            <span className="hidden sm:inline">New Section</span>
+            <FolderPlus size={14} />
+            <span>NEW SECTION</span>
           </button>
           
           {isEditMode && brokenIconIds.size > 0 && (
             <button
               onClick={handleFixAllFavicons}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 transition-colors text-sm font-medium"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 border border-orange-500/20 transition-all text-xs font-mono-ui cursor-pointer"
               title="Fix broken favicons"
             >
-              <RefreshCw size={16} />
-              <span className="hidden sm:inline">Fix {brokenIconIds.size} Icons</span>
+              <RefreshCw size={14} />
+              <span>FIX ({brokenIconIds.size})</span>
             </button>
           )}
 
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`p-2 rounded-full transition-colors ${isEditMode ? 'bg-[#4285F4] text-white' : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
+            className={`p-1.5 rounded-lg border transition-all duration-200 cursor-pointer ${
+              isEditMode 
+                ? 'bg-[#c85a32] text-white border-[#c85a32]' 
+                : 'text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5'
+            }`}
             title="Edit mode"
           >
-            <MoreVertical size={20} />
+            <MoreVertical size={16} />
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="w-full max-w-7xl flex flex-col gap-8 sm:gap-10">
+      <main className="w-full max-w-7xl flex flex-col gap-6 sm:gap-8">
+        {/* Category Tabs */}
+        <div className="w-full flex flex-wrap gap-1.5 border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8 pb-3 select-none">
+          <button
+            onClick={() => setActiveSection('All')}
+            className={`px-3 py-1 rounded-lg text-xs font-mono-ui transition-all duration-200 cursor-pointer border ${
+              activeSection === 'All'
+                ? 'bg-[#c85a32]/8 text-[#c85a32] border-[#c85a32]/20 font-bold'
+                : 'text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50 border-transparent hover:bg-black/5 dark:hover:bg-white/5'
+            }`}
+          >
+            [ALL]
+          </button>
+          {sections.map((section) => {
+            const sectionCount = bookmarks.filter(b => (b.category || 'General') === section).length;
+            return (
+              <button
+                key={section}
+                onClick={() => setActiveSection(section)}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono-ui transition-all duration-200 cursor-pointer border ${
+                  activeSection === section
+                    ? 'bg-[#c85a32]/8 text-[#c85a32] border-[#c85a32]/20 font-bold'
+                    : 'text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50 border-transparent hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <span>[{section.toUpperCase()}]</span>
+                <span className={`text-[9px] px-1 py-0.2 rounded-md ${activeSection === section ? 'bg-[#c85a32]/20 text-[#c85a32]' : 'bg-black/5 dark:bg-white/5 text-zinc-500'}`}>
+                  {sectionCount}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         <DndContext 
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          {sections.map((section, index) => {
-            const sectionBookmarks = bookmarks.filter(b => (b.category || 'General') === section);
-            
-            return (
-              <React.Fragment key={section}>
-                {index > 0 && <hr className="w-full border-t border-zinc-200 dark:border-zinc-800/80" />}
-                <div className="relative">
-                  <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-medium tracking-tight text-zinc-700 dark:text-zinc-200 flex items-center gap-3">
-                    {section}
-                    <span className="text-sm font-normal text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
-                      {sectionBookmarks.length}
-                    </span>
-                  </h2>
-                  {isEditMode && section !== 'General' && (
-                    <button 
-                      onClick={() => handleDeleteSection(section)}
-                      className="text-xs text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-full transition-colors"
-                    >
-                      Delete Section
-                    </button>
-                  )}
-                </div>
-
-                 <div className={`grid ${gridClasses[iconSize] || gridClasses.md}`}>
-                  <SortableContext 
-                    items={sectionBookmarks.map(b => b.id)}
-                    strategy={rectSortingStrategy}
-                  >
-                    {sectionBookmarks.map((bookmark) => (
-                      <SortableBookmark 
-                        key={bookmark.id}
-                        bookmark={bookmark}
-                        isEditMode={isEditMode}
-                        onDelete={handleDelete}
-                        onRefreshFavicon={handleRefreshFavicon}
-                        onImageError={handleImageError}
-                        iconSize={iconSize}
-                      />
-                    ))}
-                  </SortableContext>
-                  
-                  {/* Add Shortcut Button per section */}
-                  {(() => {
-                    const currentAddSize = addBtnSizeMap[iconSize] || addBtnSizeMap.md;
-                    return (
-                      <button 
-                        onClick={() => {
-                          setNewCategory(section);
-                          setIsAddModalOpen(true);
-                        }}
-                        className={`group flex flex-col items-center justify-start ${currentAddSize.gap} transition-transform active:scale-95 z-0`}
-                      >
-                        <div className={`${currentAddSize.container} bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center text-zinc-500 transition-all group-hover:bg-[#4285F4]/10 dark:group-hover:bg-[#4285F4]/10 group-hover:text-[#4285F4] dark:group-hover:text-[#4285F4] shadow-sm group-hover:shadow-md`}>
-                          <Plus size={currentAddSize.iconSize} strokeWidth={1.5} />
-                        </div>
-                        <span className={`${currentAddSize.text} font-medium text-zinc-500 group-hover:text-[#4285F4] dark:group-hover:text-[#4285F4] transition-colors`}>
-                          Add Link
+          {sections
+            .filter((section) => activeSection === 'All' || activeSection === section)
+            .map((section, index) => {
+              const sectionBookmarks = bookmarks.filter(b => (b.category || 'General') === section);
+              
+              return (
+                <React.Fragment key={section}>
+                  {activeSection === 'All' && index > 0 && <hr className="w-full border-t border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8" />}
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-serif-display italic font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1] flex items-center gap-3">
+                        {section}
+                        <span className="text-[10px] font-mono-ui font-normal text-zinc-400 dark:text-zinc-500 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
+                          {sectionBookmarks.length}
                         </span>
-                      </button>
-                    );
-                  })()}
-                </div>
-              </div>
-            </React.Fragment>
-            );
-          })}
+                      </h2>
+                      {isEditMode && section !== 'General' && (
+                        <button 
+                          onClick={() => handleDeleteSection(section)}
+                          className="text-[10px] font-mono-ui text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2 py-1 rounded transition-colors cursor-pointer"
+                        >
+                          DELETE SECTION
+                        </button>
+                      )}
+                    </div>
+
+                    <div className={`grid ${gridClasses[iconSize] || gridClasses.md}`}>
+                      <SortableContext 
+                        items={sectionBookmarks.map(b => b.id)}
+                        strategy={rectSortingStrategy}
+                      >
+                        {sectionBookmarks.map((bookmark) => (
+                          <SortableBookmark 
+                            key={bookmark.id}
+                            bookmark={bookmark}
+                            isEditMode={isEditMode}
+                            onDelete={handleDelete}
+                            onRefreshFavicon={handleRefreshFavicon}
+                            onImageError={handleImageError}
+                            iconSize={iconSize}
+                          />
+                        ))}
+                      </SortableContext>
+                      
+                      {/* Add Shortcut Button per section */}
+                      {(() => {
+                        const currentAddSize = addBtnSizeMap[iconSize] || addBtnSizeMap.md;
+                        return (
+                          <button 
+                            onClick={() => {
+                              setNewCategory(section);
+                              setIsAddModalOpen(true);
+                            }}
+                            className={`group flex flex-col items-center justify-start ${currentAddSize.gap} transition-transform active:scale-95 z-0 cursor-pointer`}
+                          >
+                            <div className={`${currentAddSize.container} bg-transparent border border-dashed border-[#1c1c1c]/15 dark:border-[#e5e5e1]/15 flex items-center justify-center text-[#1c1c1c]/40 dark:text-[#e5e5e1]/40 transition-all group-hover:border-[#c85a32]/40 dark:group-hover:border-[#d36135]/40 group-hover:bg-[#c85a32]/5 dark:group-hover:bg-[#d36135]/5 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135] shadow-xs`}>
+                              <Plus size={currentAddSize.iconSize} strokeWidth={1.2} />
+                            </div>
+                            <span className={`${currentAddSize.text} font-medium text-[#1c1c1c]/40 dark:text-[#e5e5e1]/40 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135] transition-colors`}>
+                              Add Link
+                            </span>
+                          </button>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </React.Fragment>
+              );
+            })}
         </DndContext>
       </main>
 
       {/* Add Link Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
           <div 
-            className="w-full max-w-md bg-white dark:bg-[#202124] rounded-3xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 animate-in zoom-in-95 duration-200"
+            className="w-full max-w-md bg-[#faf8f5] dark:bg-[#121314] rounded-2xl shadow-2xl overflow-hidden border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/50">
-              <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Add to {newCategory}</h2>
+            <div className="p-5 flex items-center justify-between border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8">
+              <h2 className="text-xl font-serif-display font-medium italic text-[#1c1c1c] dark:text-[#e5e5e1]">Add to {newCategory}</h2>
               <button 
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-full transition-colors"
+                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
               >
-                <X size={18} />
+                <X size={15} />
               </button>
             </div>
             
-            <form onSubmit={handleAddBookmark} className="p-6 space-y-5">
+            <form onSubmit={handleAddBookmark} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
                   Website URL
                 </label>
                 <input
@@ -477,12 +524,12 @@ export default function App() {
                   placeholder="e.g. news.ycombinator.com"
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4]/50 focus:border-[#4285F4] transition-all font-mono text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all font-mono-ui text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
                   Title (Optional)
                 </label>
                 <input
@@ -490,18 +537,18 @@ export default function App() {
                   placeholder="Leave empty to use domain name"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4]/50 focus:border-[#4285F4] transition-all text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
                   Section
                 </label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#4285F4]/50 focus:border-[#4285F4] transition-all text-sm appearance-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#c85a32]/40 transition-all text-xs font-mono-ui appearance-none cursor-pointer"
                 >
                   {sections.map(s => (
                     <option key={s} value={s}>{s}</option>
@@ -509,13 +556,13 @@ export default function App() {
                 </select>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={!newUrl.trim()}
-                  className="w-full py-3 px-4 bg-[#4285F4] text-white rounded-xl font-medium shadow-sm hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-2.5 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-mono-ui font-semibold shadow-xs hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  Save Bookmark
+                  SAVE BOOKMARK
                 </button>
               </div>
             </form>
@@ -525,24 +572,24 @@ export default function App() {
 
       {/* New Section Modal */}
       {isSectionModalOpen && (
-        <div className="fixed inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
           <div 
-            className="w-full max-w-sm bg-white dark:bg-[#202124] rounded-3xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 animate-in zoom-in-95 duration-200"
+            className="w-full max-w-sm bg-[#faf8f5] dark:bg-[#121314] rounded-2xl shadow-2xl overflow-hidden border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/50">
-              <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Create Section</h2>
+            <div className="p-5 flex items-center justify-between border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8">
+              <h2 className="text-xl font-serif-display font-medium italic text-[#1c1c1c] dark:text-[#e5e5e1]">Create Section</h2>
               <button 
                 onClick={() => setIsSectionModalOpen(false)}
-                className="p-2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-full transition-colors"
+                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
               >
-                <X size={18} />
+                <X size={15} />
               </button>
             </div>
             
-            <form onSubmit={handleAddSection} className="p-6 space-y-5">
+            <form onSubmit={handleAddSection} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
                   Section Name
                 </label>
                 <input
@@ -552,7 +599,7 @@ export default function App() {
                   placeholder="e.g. Work, Priorities, Recipes"
                   value={newSectionName}
                   onChange={(e) => setNewSectionName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#4285F4]/50 focus:border-[#4285F4] transition-all text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all text-xs"
                 />
               </div>
 
@@ -560,16 +607,18 @@ export default function App() {
                 <button
                   type="submit"
                   disabled={!newSectionName.trim()}
-                  className="w-full py-3 px-4 bg-[#4285F4] text-white rounded-xl font-medium shadow-sm hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-2.5 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-mono-ui font-semibold shadow-xs hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  Create Section
+                  CREATE SECTION
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* Noise background texture overlay */}
+      <div className="noise-overlay" />
     </div>
   );
 }
-

@@ -16,29 +16,29 @@ interface SortableBookmarkProps {
 
 const sizeMap = {
   sm: {
-    container: 'w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl',
-    icon: 'w-7 h-7 sm:w-8 sm:h-8',
-    text: 'text-[10px] sm:text-xs',
+    container: 'w-12 h-12 sm:w-14 sm:h-14 rounded-xl',
+    icon: 'w-6 h-6 sm:w-7 sm:h-7',
+    text: 'text-[10px] sm:text-xs font-sans-ui',
     buttonPadding: 'p-1',
     buttonIconSize: 11,
-    gap: 'gap-1 sm:gap-1.5',
+    gap: 'gap-1.5 sm:gap-2',
     overlayGap: 'gap-1',
   },
   md: {
-    container: 'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl',
-    icon: 'w-10 h-10 sm:w-12 sm:h-12',
-    text: 'text-xs sm:text-sm',
+    container: 'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl',
+    icon: 'w-9 h-9 sm:w-11 sm:h-11',
+    text: 'text-xs sm:text-sm font-sans-ui',
     buttonPadding: 'p-1.5',
-    buttonIconSize: 14,
+    buttonIconSize: 13,
     gap: 'gap-2 sm:gap-2.5',
     overlayGap: 'gap-1.5',
   },
   lg: {
     container: 'w-20 h-20 sm:w-24 sm:h-24 rounded-3xl',
-    icon: 'w-12 h-12 sm:w-16 sm:h-16',
-    text: 'text-sm sm:text-base',
+    icon: 'w-11 h-11 sm:w-14 sm:h-14',
+    text: 'text-sm sm:text-base font-sans-ui',
     buttonPadding: 'p-2',
-    buttonIconSize: 18,
+    buttonIconSize: 16,
     gap: 'gap-3 sm:gap-3.5',
     overlayGap: 'gap-2',
   }
@@ -68,7 +68,7 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
       style={style}
       {...attributes}
       {...listeners}
-      className={`relative group flex flex-col items-center justify-start ${currentSize.gap} transition-transform ${isEditMode ? 'cursor-grab active:cursor-grabbing select-none' : 'hover:-translate-y-1'}`}
+      className={`relative group flex flex-col items-center justify-start ${currentSize.gap} transition-all duration-300 ${isEditMode ? 'cursor-grab active:cursor-grabbing select-none' : 'hover:-translate-y-[2px]'}`}
     >
       {/* We use a div instead of "a" in edit mode to prevent drag conflicts with native anchor dragging */}
       {isEditMode ? (
@@ -87,11 +87,11 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
 
       {/* Edit Mode Overlay (Placed outside the anchor to handle clicks properly) */}
       {isEditMode && (
-        <div className={`absolute top-0 left-0 ${currentSize.container} bg-black/40 backdrop-blur-[2px] flex items-center justify-center ${currentSize.overlayGap} animate-in fade-in duration-200 pointer-events-auto ${isDragging ? 'opacity-0' : 'opacity-100'}`}>
+        <div className={`absolute top-0 left-0 ${currentSize.container} bg-black/60 backdrop-blur-[1px] flex items-center justify-center ${currentSize.overlayGap} animate-in fade-in duration-200 pointer-events-auto ${isDragging ? 'opacity-0' : 'opacity-100'}`}>
           <button 
             onClick={(e) => onRefreshFavicon(e, bookmark.id)}
             onPointerDown={(e) => e.stopPropagation()}
-            className={`${currentSize.buttonPadding} bg-[#4285F4] text-white rounded-full hover:bg-blue-600 hover:scale-110 transition-all shadow-lg cursor-pointer`}
+            className={`${currentSize.buttonPadding} bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-full hover:scale-110 transition-all shadow-md cursor-pointer`}
             title="Refresh Favicon"
           >
             <RefreshCw size={currentSize.buttonIconSize} />
@@ -99,7 +99,7 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
           <button 
             onClick={(e) => onDelete(e, bookmark.id)}
             onPointerDown={(e) => e.stopPropagation()} // Prevent drag start when clicking delete
-            className={`${currentSize.buttonPadding} bg-red-500 text-white rounded-full hover:bg-red-600 hover:scale-110 transition-all shadow-lg cursor-pointer`}
+            className={`${currentSize.buttonPadding} bg-zinc-800 hover:bg-zinc-950 dark:bg-zinc-200 dark:hover:bg-white text-zinc-100 dark:text-zinc-900 rounded-full hover:scale-110 transition-all shadow-md cursor-pointer`}
             title="Delete Bookmark"
           >
             <Trash2 size={currentSize.buttonIconSize} />
@@ -121,12 +121,12 @@ function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconS
 
   return (
     <>
-      <div className={`relative ${currentSize.container} bg-white dark:bg-zinc-800 shadow-sm border border-black/5 dark:border-white/5 overflow-hidden flex items-center justify-center group-hover:shadow-md transition-all ${isDragging ? 'shadow-xl scale-110' : ''} ${imgError ? 'fallback-bg bg-gray-200 dark:bg-gray-800' : ''}`}>
+      <div className={`relative ${currentSize.container} bg-white/40 dark:bg-[#121314]/40 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 group-hover:border-[#c85a32]/25 dark:group-hover:border-[#d36135]/25 group-hover:bg-white dark:group-hover:bg-[#121314] overflow-hidden flex items-center justify-center transition-all duration-300 ${isDragging ? 'shadow-md border-[#c85a32]/40 dark:border-[#d36135]/40 scale-105' : ''}`}>
         {!imgError ? (
           <img 
             src={bookmark.iconUrl} 
             alt={bookmark.title}
-            className={`${currentSize.icon} object-contain ${isEditMode ? 'pointer-events-none' : ''}`}
+            className={`${currentSize.icon} object-contain transition-transform duration-300 group-hover:scale-105 ${isEditMode ? 'pointer-events-none' : ''}`}
             draggable={false}
             onError={() => {
               setImgError(true);
@@ -134,12 +134,12 @@ function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconS
             }}
           />
         ) : (
-          <span className="font-bold text-2xl text-zinc-400 dark:text-zinc-500 pointer-events-none">
+          <span className="font-serif-display text-4xl italic font-semibold text-[#c85a32] dark:text-[#d36135] pointer-events-none select-none">
             {bookmark.title.charAt(0).toUpperCase()}
           </span>
         )}
       </div>
-      <span className={`${currentSize.text} font-medium text-zinc-700 dark:text-zinc-300 text-center w-full truncate px-1 select-none`}>
+      <span className={`${currentSize.text} font-medium text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 group-hover:text-[#1c1c1c] dark:group-hover:text-[#e5e5e1] text-center w-full truncate px-1.5 select-none transition-colors duration-200`}>
         {bookmark.title}
       </span>
     </>
