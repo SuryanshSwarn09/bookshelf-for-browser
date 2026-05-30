@@ -1,0 +1,6 @@
+{
+  "name": "Bookshelf",
+  "description": "A minimal, responsive grid for storing and accessing your favorite web links. Blends seamlessly with your browser's dark/light theme.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+  
+  body {
+    /* Using neutral grays that match native browser "New Tab" themes */
+    @apply bg-[#f8f9fa] text-zinc-900 antialiased transition-colors duration-200;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      @apply bg-[#202124] text-zinc-100;
+    }
+  }
+
+  /* Custom scrollbar to keep it minimal */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-black/10 dark:bg-white/10 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-black/20 dark:bg-white/20;
+  }
+}
+
+/* Fallback for image loading error */
+.icon-fallback {
+  @apply flex items-center justify-center bg-gray-200 dark:bg-gray-800 text-gray-500 font-bold rounded-2xl w-full h-full;
+}
+
+
