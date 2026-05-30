@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, X, MoreVertical, FolderPlus, Download, Upload, RefreshCw, Image } from 'lucide-react';
+import { Plus, Trash2, X, MoreVertical, FolderPlus, Download, Upload, RefreshCw, Image, Play, Pause, RotateCcw } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -82,6 +82,9 @@ export default function App() {
   const [bgOpacity, setBgOpacity] = useState<number>(40);
   const [bgBlur, setBgBlur] = useState<number>(0);
   const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState<number>(1500);
+  const [timerMode, setTimerMode] = useState<'work' | 'break'>('work');
+  const [timerActive, setTimerActive] = useState<boolean>(false);
   const [isReady, setIsReady] = useState(false);
   
   // Modals State
@@ -188,10 +191,20 @@ export default function App() {
       setBgBlur(Number(savedBgBlur));
     }
 
+    const savedTimerSeconds = localStorage.getItem('bookshelf-timer-seconds');
+    if (savedTimerSeconds) {
+      setTimerSeconds(Number(savedTimerSeconds));
+    }
+
+    const savedTimerMode = localStorage.getItem('bookshelf-timer-mode');
+    if (savedTimerMode === 'work' || savedTimerMode === 'break') {
+      setTimerMode(savedTimerMode);
+    }
+
     setIsReady(true);
   }, []);
 
-  // Save to localeStorage whenever bookmarks, sections, settings, or wallpaper configurations change
+  // Save to localeStorage whenever bookmarks, sections, settings, wallpaper, or timer change
   useEffect(() => {
     if (isReady) {
       localStorage.setItem('bookshelf-data-v2', JSON.stringify({ bookmarks, sections }));
@@ -200,8 +213,76 @@ export default function App() {
       localStorage.setItem('bookshelf-bg-wallpaper', bgWallpaper);
       localStorage.setItem('bookshelf-bg-opacity', bgOpacity.toString());
       localStorage.setItem('bookshelf-bg-blur', bgBlur.toString());
+      localStorage.setItem('bookshelf-timer-seconds', timerSeconds.toString());
+      localStorage.setItem('bookshelf-timer-mode', timerMode);
     }
-  }, [bookmarks, sections, iconSize, activeSection, bgWallpaper, bgOpacity, bgBlur, isReady]);
+  }, [bookmarks, sections, iconSize, activeSection, bgWallpaper, bgOpacity, bgBlur, timerSeconds, timerMode, isReady]);
+
+  const playZenChime = () => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5 note (clear chime)
+      osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.15); // C6 sweep
+      
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2); // Smooth decay
+      
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 1.2);
+    } catch (e) {
+      // Fallback
+    }
+  };
+
+  useEffect(() => {
+    let interval: any = null;
+    if (timerActive && timerSeconds > 0) {
+      interval = setInterval(() => {
+        setTimerSeconds((prev) => prev - 1);
+      }, 1000);
+    } else if (timerActive && timerSeconds === 0) {
+      playZenChime();
+      const nextMode = timerMode === 'work' ? 'break' : 'work';
+      const nextSeconds = nextMode === 'work' ? 1500 : 300;
+      setTimerMode(nextMode);
+      setTimerSeconds(nextSeconds);
+      setTimerActive(false);
+      setTimeout(() => {
+        alert(timerMode === 'work' ? 'Work session finished! Time for a short break.' : 'Break finished! Time to focus.');
+      }, 100);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timerActive, timerSeconds, timerMode]);
+
+  const toggleTimer = () => {
+    setTimerActive(!timerActive);
+  };
+
+  const resetTimer = () => {
+    setTimerActive(false);
+    setTimerSeconds(timerMode === 'work' ? 1500 : 300);
+  };
+
+  const handleTimerModeChange = (mode: 'work' | 'break') => {
+    setTimerActive(false);
+    setTimerMode(mode);
+    setTimerSeconds(mode === 'work' ? 1500 : 300);
+  };
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   const handleAddBookmark = (e: React.FormEvent) => {
     e.preventDefault();
@@ -318,7 +399,7 @@ export default function App() {
   if (!isReady) return null;
 
   return (
-    <div className="min-h-screen p-6 sm:p-10 md:p-14 transition-colors duration-300 flex flex-col items-center w-full animate-fade-in-up">
+    <div className="min-h-screen p-6 sm:p-10 md:p-14 transition-colors duration-300 flex flex-col items-center w-full">
       {/* Background Wallpaper Backdrop */}
       {bgWallpaper && (
         <div 
@@ -331,7 +412,7 @@ export default function App() {
         />
       )}
       {/* Header Container */}
-      <div className="w-full max-w-7xl flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-6">
+      <div className="w-full max-w-7xl flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-6 animate-fade-in-up">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2 select-none">
             <div className="h-2 w-2 rounded-full bg-[#c85a32] dark:bg-[#d36135]"></div>
@@ -402,6 +483,39 @@ export default function App() {
             </button>
           )}
 
+          {/* Pomodoro Focus Timer Widget */}
+          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 bg-white/40 dark:bg-zinc-900/40 text-xs font-mono-ui select-none text-[#1c1c1c] dark:text-[#e5e5e1]">
+            <span className={`h-1.5 w-1.5 rounded-full ${timerActive ? 'bg-[#c85a32] dark:bg-[#d36135] animate-pulse' : 'bg-[#1c1c1c]/30 dark:bg-[#e5e5e1]/30'}`}></span>
+            
+            <button
+              onClick={() => handleTimerModeChange(timerMode === 'work' ? 'break' : 'work')}
+              className="text-[9px] text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:text-[#c85a32] dark:hover:text-[#d36135] uppercase font-bold px-1.5 py-0.5 bg-black/5 dark:bg-white/5 rounded cursor-pointer transition-colors duration-150"
+              title={`Switch to ${timerMode === 'work' ? 'Break' : 'Work'} Mode`}
+            >
+              {timerMode}
+            </button>
+
+            <span className="font-semibold tracking-wider min-w-[36px] text-center font-mono-ui">
+              {formatTime(timerSeconds)}
+            </span>
+
+            <button 
+              onClick={toggleTimer} 
+              className="text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:text-[#c85a32] dark:hover:text-[#d36135] transition-colors duration-150 cursor-pointer"
+              title={timerActive ? 'Pause' : 'Start'}
+            >
+              {timerActive ? <Pause size={11} /> : <Play size={11} />}
+            </button>
+            
+            <button 
+              onClick={resetTimer} 
+              className="text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:text-[#c85a32] dark:hover:text-[#d36135] transition-colors duration-150 cursor-pointer"
+              title="Reset"
+            >
+              <RotateCcw size={11} />
+            </button>
+          </div>
+
           <button
             onClick={() => setIsWallpaperModalOpen(true)}
             className="p-1.5 rounded-lg text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
@@ -425,7 +539,7 @@ export default function App() {
       </div>
 
       {/* Main Content */}
-      <main className="w-full max-w-7xl flex flex-col gap-6 sm:gap-8">
+      <main className="w-full max-w-7xl flex flex-col gap-6 sm:gap-8 animate-fade-in-up [animation-delay:100ms] opacity-0">
         {/* Category Tabs */}
         <div className="w-full flex flex-wrap gap-1.5 border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8 pb-3 select-none">
           <button
