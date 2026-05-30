@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, X, MoreVertical, FolderPlus, Download, Upload, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, X, MoreVertical, FolderPlus, Download, Upload, RefreshCw, Image } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -78,6 +78,10 @@ export default function App() {
   const [sections, setSections] = useState<string[]>([]);
   const [iconSize, setIconSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [activeSection, setActiveSection] = useState<string>('All');
+  const [bgWallpaper, setBgWallpaper] = useState<string>('');
+  const [bgOpacity, setBgOpacity] = useState<number>(40);
+  const [bgBlur, setBgBlur] = useState<number>(0);
+  const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
   const [isReady, setIsReady] = useState(false);
   
   // Modals State
@@ -169,17 +173,35 @@ export default function App() {
       setActiveSection(savedActiveSection);
     }
 
+    const savedBgWallpaper = localStorage.getItem('bookshelf-bg-wallpaper');
+    if (savedBgWallpaper) {
+      setBgWallpaper(savedBgWallpaper);
+    }
+
+    const savedBgOpacity = localStorage.getItem('bookshelf-bg-opacity');
+    if (savedBgOpacity) {
+      setBgOpacity(Number(savedBgOpacity));
+    }
+
+    const savedBgBlur = localStorage.getItem('bookshelf-bg-blur');
+    if (savedBgBlur) {
+      setBgBlur(Number(savedBgBlur));
+    }
+
     setIsReady(true);
   }, []);
 
-  // Save to localeStorage whenever bookmarks, sections, iconSize or activeSection change
+  // Save to localeStorage whenever bookmarks, sections, settings, or wallpaper configurations change
   useEffect(() => {
     if (isReady) {
       localStorage.setItem('bookshelf-data-v2', JSON.stringify({ bookmarks, sections }));
       localStorage.setItem('bookshelf-icon-size', iconSize);
       localStorage.setItem('bookshelf-active-section', activeSection);
+      localStorage.setItem('bookshelf-bg-wallpaper', bgWallpaper);
+      localStorage.setItem('bookshelf-bg-opacity', bgOpacity.toString());
+      localStorage.setItem('bookshelf-bg-blur', bgBlur.toString());
     }
-  }, [bookmarks, sections, iconSize, activeSection, isReady]);
+  }, [bookmarks, sections, iconSize, activeSection, bgWallpaper, bgOpacity, bgBlur, isReady]);
 
   const handleAddBookmark = (e: React.FormEvent) => {
     e.preventDefault();
@@ -297,6 +319,17 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-6 sm:p-10 md:p-14 transition-colors duration-300 flex flex-col items-center w-full animate-fade-in-up">
+      {/* Background Wallpaper Backdrop */}
+      {bgWallpaper && (
+        <div 
+          className="fixed inset-0 w-full h-full bg-cover bg-center transition-all duration-500 z-[-1] pointer-events-none"
+          style={{
+            backgroundImage: `url(${bgWallpaper})`,
+            opacity: bgOpacity / 100,
+            filter: bgBlur > 0 ? `blur(${bgBlur}px)` : 'none'
+          }}
+        />
+      )}
       {/* Header Container */}
       <div className="w-full max-w-7xl flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-6">
         <div className="flex flex-col gap-1">
@@ -368,6 +401,14 @@ export default function App() {
               <span>FIX ({brokenIconIds.size})</span>
             </button>
           )}
+
+          <button
+            onClick={() => setIsWallpaperModalOpen(true)}
+            className="p-1.5 rounded-lg text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
+            title="Wallpaper Settings"
+          >
+            <Image size={16} />
+          </button>
 
           <button
             onClick={() => setIsEditMode(!isEditMode)}
@@ -613,6 +654,95 @@ export default function App() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Wallpaper Settings Modal */}
+      {isWallpaperModalOpen && (
+        <div className="fixed inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+          <div 
+            className="w-full max-w-sm bg-[#faf8f5] dark:bg-[#121314] rounded-2xl shadow-2xl overflow-hidden border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 flex items-center justify-between border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8">
+              <h2 className="text-xl font-serif-display font-medium italic text-[#1c1c1c] dark:text-[#e5e5e1]">Wallpaper Settings</h2>
+              <button 
+                onClick={() => setIsWallpaperModalOpen(false)}
+                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
+              >
+                <X size={15} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-5">
+              <div>
+                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                  Image URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://example.com/image.jpg"
+                  value={bgWallpaper}
+                  onChange={(e) => setBgWallpaper(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-455 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all text-xs font-mono-ui"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                  <span>Opacity</span>
+                  <span>{bgOpacity}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value={bgOpacity}
+                  onChange={(e) => setBgOpacity(Number(e.target.value))}
+                  className="w-full accent-[#c85a32] dark:accent-[#d36135] cursor-pointer"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                  <span>Blur</span>
+                  <span>{bgBlur}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  step="1"
+                  value={bgBlur}
+                  onChange={(e) => setBgBlur(Number(e.target.value))}
+                  className="w-full accent-[#c85a32] dark:accent-[#d36135] cursor-pointer"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBgWallpaper('');
+                    setBgOpacity(40);
+                    setBgBlur(0);
+                    setIsWallpaperModalOpen(false);
+                  }}
+                  className="flex-1 py-2 px-3 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg font-mono-ui text-xs transition-colors cursor-pointer text-center"
+                >
+                  CLEAR
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsWallpaperModalOpen(false)}
+                  className="flex-1 py-2 px-3 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-mono-ui font-semibold shadow-xs transition-colors cursor-pointer text-center"
+                >
+                  SAVE & CLOSE
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
