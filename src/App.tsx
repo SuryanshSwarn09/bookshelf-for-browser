@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, X, MoreVertical, FolderPlus, Download, Upload, RefreshCw, Image, Play, Pause, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, X, FolderPlus, Download, Upload, RefreshCw, Image, Pencil, Check } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -82,9 +82,6 @@ export default function App() {
   const [bgOpacity, setBgOpacity] = useState<number>(40);
   const [bgBlur, setBgBlur] = useState<number>(0);
   const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
-  const [timerSeconds, setTimerSeconds] = useState<number>(1500);
-  const [timerMode, setTimerMode] = useState<'work' | 'break'>('work');
-  const [timerActive, setTimerActive] = useState<boolean>(false);
   const [isReady, setIsReady] = useState(false);
   
   // Modals State
@@ -191,20 +188,23 @@ export default function App() {
       setBgBlur(Number(savedBgBlur));
     }
 
-    const savedTimerSeconds = localStorage.getItem('bookshelf-timer-seconds');
-    if (savedTimerSeconds) {
-      setTimerSeconds(Number(savedTimerSeconds));
-    }
-
-    const savedTimerMode = localStorage.getItem('bookshelf-timer-mode');
-    if (savedTimerMode === 'work' || savedTimerMode === 'break') {
-      setTimerMode(savedTimerMode);
-    }
-
     setIsReady(true);
   }, []);
 
-  // Save to localeStorage whenever bookmarks, sections, settings, wallpaper, or timer change
+  // Listen for Escape key to close modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsAddModalOpen(false);
+        setIsSectionModalOpen(false);
+        setIsWallpaperModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Save to localeStorage whenever bookmarks, sections, settings, wallpaper change
   useEffect(() => {
     if (isReady) {
       localStorage.setItem('bookshelf-data-v2', JSON.stringify({ bookmarks, sections }));
@@ -213,76 +213,8 @@ export default function App() {
       localStorage.setItem('bookshelf-bg-wallpaper', bgWallpaper);
       localStorage.setItem('bookshelf-bg-opacity', bgOpacity.toString());
       localStorage.setItem('bookshelf-bg-blur', bgBlur.toString());
-      localStorage.setItem('bookshelf-timer-seconds', timerSeconds.toString());
-      localStorage.setItem('bookshelf-timer-mode', timerMode);
     }
-  }, [bookmarks, sections, iconSize, activeSection, bgWallpaper, bgOpacity, bgBlur, timerSeconds, timerMode, isReady]);
-
-  const playZenChime = () => {
-    try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5 note (clear chime)
-      osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.15); // C6 sweep
-      
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2); // Smooth decay
-      
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 1.2);
-    } catch (e) {
-      // Fallback
-    }
-  };
-
-  useEffect(() => {
-    let interval: any = null;
-    if (timerActive && timerSeconds > 0) {
-      interval = setInterval(() => {
-        setTimerSeconds((prev) => prev - 1);
-      }, 1000);
-    } else if (timerActive && timerSeconds === 0) {
-      playZenChime();
-      const nextMode = timerMode === 'work' ? 'break' : 'work';
-      const nextSeconds = nextMode === 'work' ? 1500 : 300;
-      setTimerMode(nextMode);
-      setTimerSeconds(nextSeconds);
-      setTimerActive(false);
-      setTimeout(() => {
-        alert(timerMode === 'work' ? 'Work session finished! Time for a short break.' : 'Break finished! Time to focus.');
-      }, 100);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timerActive, timerSeconds, timerMode]);
-
-  const toggleTimer = () => {
-    setTimerActive(!timerActive);
-  };
-
-  const resetTimer = () => {
-    setTimerActive(false);
-    setTimerSeconds(timerMode === 'work' ? 1500 : 300);
-  };
-
-  const handleTimerModeChange = (mode: 'work' | 'break') => {
-    setTimerActive(false);
-    setTimerMode(mode);
-    setTimerSeconds(mode === 'work' ? 1500 : 300);
-  };
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-  };
+  }, [bookmarks, sections, iconSize, activeSection, bgWallpaper, bgOpacity, bgBlur, isReady]);
 
   const handleAddBookmark = (e: React.FormEvent) => {
     e.preventDefault();
@@ -400,6 +332,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-6 sm:p-10 md:p-14 transition-colors duration-300 flex flex-col items-center w-full">
+      {/* iOS Ambient Blob Mesh */}
+      <div className="ambient-mesh-container">
+        <div className="ambient-blob ambient-blob-1" />
+        <div className="ambient-blob ambient-blob-2" />
+        <div className="ambient-blob ambient-blob-3" />
+      </div>
+
       {/* Background Wallpaper Backdrop */}
       {bgWallpaper && (
         <div 
@@ -411,19 +350,21 @@ export default function App() {
           }}
         />
       )}
+
       {/* Header Container */}
-      <div className="w-full max-w-7xl flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-6 animate-fade-in-up">
+      <div className="w-full max-w-7xl flex flex-col md:flex-row items-start md:items-center justify-between mb-8 sm:mb-10 gap-6 animate-fade-in-up">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2 select-none">
-            <div className="h-2 w-2 rounded-full bg-[#c85a32] dark:bg-[#d36135]"></div>
-            <span className="text-[10px] uppercase tracking-widest font-mono-ui text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50">Workspace Dashboard</span>
+            <div className="h-2 w-2 rounded-full bg-[#c85a32] dark:bg-[#d36135] animate-pulse"></div>
+            <span className="text-[10px] uppercase tracking-widest font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 font-semibold">Workspace Dashboard</span>
           </div>
-          <h1 className="text-4xl font-serif-display italic font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1] select-none mt-1">
+          <h1 className="text-4xl sm:text-5xl font-serif-display italic font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1] select-none mt-0.5">
             Bookshelf
           </h1>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3 self-stretch sm:self-auto justify-end">
+        {/* Floating iOS Controls Dock */}
+        <div className="ios-glass-pill rounded-full p-2 flex flex-wrap items-center gap-2 self-stretch md:self-auto justify-end shadow-lg">
           <input
             type="file"
             accept=".json"
@@ -433,29 +374,29 @@ export default function App() {
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="p-1.5 rounded-lg text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
+            className="p-2 rounded-full text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:text-[#c85a32] dark:hover:text-[#d36135] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
             title="Import Backup"
           >
             <Upload size={15} />
           </button>
           <button
             onClick={handleExport}
-            className="p-1.5 rounded-lg text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
+            className="p-2 rounded-full text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:text-[#c85a32] dark:hover:text-[#d36135] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
             title="Export Backup"
           >
             <Download size={15} />
           </button>
 
           {/* Icon Size Toggle segmented control */}
-          <div className="flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-lg border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 gap-0.5" title="Icon size">
+          <div className="flex items-center bg-black/5 dark:bg-white/10 p-1 rounded-full border border-black/5 dark:border-white/10 gap-0.5" title="Icon size">
             {(['sm', 'md', 'lg'] as const).map((size) => (
               <button
                 key={size}
                 onClick={() => setIconSize(size)}
-                className={`px-2.5 py-0.5 rounded-md text-[10px] font-mono-ui font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-full text-[10px] font-mono-ui font-semibold transition-all duration-200 cursor-pointer active:scale-95 ${
                   iconSize === size
-                    ? 'bg-[#c85a32] text-white shadow-xs font-bold'
-                    : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    ? 'bg-[#c85a32] dark:bg-[#d36135] text-white shadow-md font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
                 title={`${size === 'sm' ? 'Small' : size === 'md' ? 'Medium' : 'Large'} Icons`}
               >
@@ -466,7 +407,7 @@ export default function App() {
 
           <button
             onClick={() => setIsSectionModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 bg-white/40 dark:bg-zinc-900/40 hover:bg-[#c85a32]/10 dark:hover:bg-[#d36135]/10 text-xs font-mono-ui transition-all duration-200 cursor-pointer text-[#1c1c1c] dark:text-[#e5e5e1]"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/15 bg-white/40 dark:bg-black/30 hover:bg-[#c85a32]/10 dark:hover:bg-[#d36135]/15 text-xs font-mono-ui transition-all active:scale-95 cursor-pointer text-[#1c1c1c] dark:text-[#e5e5e1]"
           >
             <FolderPlus size={14} />
             <span>NEW SECTION</span>
@@ -475,7 +416,7 @@ export default function App() {
           {isEditMode && brokenIconIds.size > 0 && (
             <button
               onClick={handleFixAllFavicons}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 border border-orange-500/20 transition-all text-xs font-mono-ui cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-orange-500/15 text-orange-600 dark:text-orange-400 hover:bg-orange-500/25 border border-orange-500/30 transition-all text-xs font-mono-ui active:scale-95 cursor-pointer"
               title="Fix broken favicons"
             >
               <RefreshCw size={14} />
@@ -483,74 +424,44 @@ export default function App() {
             </button>
           )}
 
-          {/* Pomodoro Focus Timer Widget */}
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 bg-white/40 dark:bg-zinc-900/40 text-xs font-mono-ui select-none text-[#1c1c1c] dark:text-[#e5e5e1]">
-            <span className={`h-1.5 w-1.5 rounded-full ${timerActive ? 'bg-[#c85a32] dark:bg-[#d36135] animate-pulse' : 'bg-[#1c1c1c]/30 dark:bg-[#e5e5e1]/30'}`}></span>
-            
-            <button
-              onClick={() => handleTimerModeChange(timerMode === 'work' ? 'break' : 'work')}
-              className="text-[9px] text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:text-[#c85a32] dark:hover:text-[#d36135] uppercase font-bold px-1.5 py-0.5 bg-black/5 dark:bg-white/5 rounded cursor-pointer transition-colors duration-150"
-              title={`Switch to ${timerMode === 'work' ? 'Break' : 'Work'} Mode`}
-            >
-              {timerMode}
-            </button>
-
-            <span className="font-semibold tracking-wider min-w-[36px] text-center font-mono-ui">
-              {formatTime(timerSeconds)}
-            </span>
-
-            <button 
-              onClick={toggleTimer} 
-              className="text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:text-[#c85a32] dark:hover:text-[#d36135] transition-colors duration-150 cursor-pointer"
-              title={timerActive ? 'Pause' : 'Start'}
-            >
-              {timerActive ? <Pause size={11} /> : <Play size={11} />}
-            </button>
-            
-            <button 
-              onClick={resetTimer} 
-              className="text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:text-[#c85a32] dark:hover:text-[#d36135] transition-colors duration-150 cursor-pointer"
-              title="Reset"
-            >
-              <RotateCcw size={11} />
-            </button>
-          </div>
-
           <button
             onClick={() => setIsWallpaperModalOpen(true)}
-            className="p-1.5 rounded-lg text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
+            className="p-2 rounded-full text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:text-[#c85a32] dark:hover:text-[#d36135] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
             title="Wallpaper Settings"
           >
             <Image size={16} />
           </button>
 
+          {/* Edit Mode Toggle Button */}
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`p-1.5 rounded-lg border transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border transition-all duration-200 cursor-pointer active:scale-95 text-xs font-mono-ui font-semibold ${
               isEditMode 
-                ? 'bg-[#c85a32] text-white border-[#c85a32]' 
-                : 'text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 hover:bg-black/5 dark:hover:bg-white/5'
+                ? 'bg-[#c85a32] text-white border-[#c85a32] shadow-md' 
+                : 'text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 border-[#1c1c1c]/10 dark:border-[#e5e5e1]/15 bg-white/40 dark:bg-black/30 hover:bg-[#c85a32]/10 dark:hover:bg-[#d36135]/15'
             }`}
-            title="Edit mode"
+            title="Toggle Edit Mode"
           >
-            <MoreVertical size={16} />
+            {isEditMode ? <Check size={13} /> : <Pencil size={13} />}
+            <span>{isEditMode ? 'DONE' : 'EDIT'}</span>
           </button>
         </div>
       </div>
 
+
       {/* Main Content */}
-      <main className="w-full max-w-7xl flex flex-col gap-6 sm:gap-8 animate-fade-in-up [animation-delay:100ms] opacity-0">
-        {/* Category Tabs */}
-        <div className="w-full flex flex-wrap gap-1.5 border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8 pb-3 select-none">
+      <main className="w-full max-w-7xl flex flex-col gap-6 sm:gap-8 animate-fade-in-up [animation-delay:100ms]">
+        {/* Category Tabs iOS Glass Segmented Control */}
+        <div className="w-full flex flex-wrap gap-1.5 p-1.5 rounded-2xl ios-glass-pill select-none">
           <button
             onClick={() => setActiveSection('All')}
-            className={`px-3 py-1 rounded-lg text-xs font-mono-ui transition-all duration-200 cursor-pointer border ${
+            className={`px-4 py-1.5 rounded-xl text-xs font-mono-ui transition-all duration-200 cursor-pointer active:scale-95 ${
               activeSection === 'All'
-                ? 'bg-[#c85a32]/8 text-[#c85a32] border-[#c85a32]/20 font-bold'
-                : 'text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50 border-transparent hover:bg-black/5 dark:hover:bg-white/5'
+                ? 'bg-[#c85a32] text-white font-bold shadow-md'
+                : 'text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:bg-black/5 dark:hover:bg-white/10'
             }`}
           >
-            [ALL]
+            ALL
           </button>
           {sections.map((section) => {
             const sectionCount = bookmarks.filter(b => (b.category || 'General') === section).length;
@@ -558,14 +469,14 @@ export default function App() {
               <button
                 key={section}
                 onClick={() => setActiveSection(section)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono-ui transition-all duration-200 cursor-pointer border ${
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-mono-ui transition-all duration-200 cursor-pointer active:scale-95 ${
                   activeSection === section
-                    ? 'bg-[#c85a32]/8 text-[#c85a32] border-[#c85a32]/20 font-bold'
-                    : 'text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50 border-transparent hover:bg-black/5 dark:hover:bg-white/5'
+                    ? 'bg-[#c85a32] text-white font-bold shadow-md'
+                    : 'text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:bg-black/5 dark:hover:bg-white/10'
                 }`}
               >
-                <span>[{section.toUpperCase()}]</span>
-                <span className={`text-[9px] px-1 py-0.2 rounded-md ${activeSection === section ? 'bg-[#c85a32]/20 text-[#c85a32]' : 'bg-black/5 dark:bg-white/5 text-zinc-500'}`}>
+                <span>{section.toUpperCase()}</span>
+                <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-semibold ${activeSection === section ? 'bg-white/25 text-white' : 'bg-black/10 dark:bg-white/10 text-zinc-600 dark:text-zinc-300'}`}>
                   {sectionCount}
                 </span>
               </button>
@@ -585,19 +496,19 @@ export default function App() {
               
               return (
                 <React.Fragment key={section}>
-                  {activeSection === 'All' && index > 0 && <hr className="w-full border-t border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8" />}
+                  {activeSection === 'All' && index > 0 && <hr className="w-full border-t border-[#1c1c1c]/8 dark:border-white/10" />}
                   <div className="relative">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-xl font-serif-display italic font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1] flex items-center gap-3">
                         {section}
-                        <span className="text-[10px] font-mono-ui font-normal text-zinc-400 dark:text-zinc-500 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-mono-ui font-normal text-zinc-500 dark:text-zinc-400 bg-black/5 dark:bg-white/10 px-2.5 py-0.5 rounded-full">
                           {sectionBookmarks.length}
                         </span>
                       </h2>
                       {isEditMode && section !== 'General' && (
                         <button 
                           onClick={() => handleDeleteSection(section)}
-                          className="text-[10px] font-mono-ui text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2 py-1 rounded transition-colors cursor-pointer"
+                          className="text-[10px] font-mono-ui text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2 py-1 rounded-full transition-colors cursor-pointer"
                         >
                           DELETE SECTION
                         </button>
@@ -633,10 +544,10 @@ export default function App() {
                             }}
                             className={`group flex flex-col items-center justify-start ${currentAddSize.gap} transition-transform active:scale-95 z-0 cursor-pointer`}
                           >
-                            <div className={`${currentAddSize.container} bg-transparent border border-dashed border-[#1c1c1c]/15 dark:border-[#e5e5e1]/15 flex items-center justify-center text-[#1c1c1c]/40 dark:text-[#e5e5e1]/40 transition-all group-hover:border-[#c85a32]/40 dark:group-hover:border-[#d36135]/40 group-hover:bg-[#c85a32]/5 dark:group-hover:bg-[#d36135]/5 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135] shadow-xs`}>
-                              <Plus size={currentAddSize.iconSize} strokeWidth={1.2} />
+                            <div className={`${currentAddSize.container} ios-glass-card border-dashed border-[#1c1c1c]/20 dark:border-white/20 flex items-center justify-center text-[#1c1c1c]/40 dark:text-[#e5e5e1]/40 transition-all group-hover:border-[#c85a32]/50 dark:group-hover:border-[#d36135]/50 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135]`}>
+                              <Plus size={currentAddSize.iconSize} strokeWidth={1.4} />
                             </div>
-                            <span className={`${currentAddSize.text} font-medium text-[#1c1c1c]/40 dark:text-[#e5e5e1]/40 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135] transition-colors`}>
+                            <span className={`${currentAddSize.text} font-medium text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135] transition-colors`}>
                               Add Link
                             </span>
                           </button>
@@ -652,16 +563,19 @@ export default function App() {
 
       {/* Add Link Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+        <div 
+          onClick={() => setIsAddModalOpen(false)}
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+        >
           <div 
-            className="w-full max-w-md bg-[#faf8f5] dark:bg-[#121314] rounded-2xl shadow-2xl overflow-hidden border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 animate-in zoom-in-95 duration-200"
+            className="w-full max-w-md bg-[#faf8f5]/95 dark:bg-[#121314]/95 backdrop-blur-2xl text-[#1c1c1c] dark:text-[#e5e5e1] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/15"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 flex items-center justify-between border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8">
-              <h2 className="text-xl font-serif-display font-medium italic text-[#1c1c1c] dark:text-[#e5e5e1]">Add to {newCategory}</h2>
+            <div className="p-6 flex items-center justify-between border-b border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10">
+              <h2 className="text-2xl font-serif-display font-medium text-[#1c1c1c] dark:text-[#e5e5e1]">Add to {newCategory}</h2>
               <button 
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
+                className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-full transition-all active:scale-90 cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -669,7 +583,7 @@ export default function App() {
             
             <form onSubmit={handleAddBookmark} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
                   Website URL
                 </label>
                 <input
@@ -679,12 +593,12 @@ export default function App() {
                   placeholder="e.g. news.ycombinator.com"
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all font-mono-ui text-xs"
+                  className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all font-sans-ui text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
                   Title (Optional)
                 </label>
                 <input
@@ -692,21 +606,21 @@ export default function App() {
                   placeholder="Leave empty to use domain name"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all text-xs"
+                  className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
                   Section
                 </label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#c85a32]/40 transition-all text-xs font-mono-ui appearance-none cursor-pointer"
+                  className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all text-xs font-sans-ui appearance-none cursor-pointer"
                 >
                   {sections.map(s => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s} className="bg-[#faf8f5] dark:bg-[#121314] text-[#1c1c1c] dark:text-[#e5e5e1]">{s}</option>
                   ))}
                 </select>
               </div>
@@ -715,7 +629,7 @@ export default function App() {
                 <button
                   type="submit"
                   disabled={!newUrl.trim()}
-                  className="w-full py-2.5 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-mono-ui font-semibold shadow-xs hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full py-3 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-2xl font-sans-ui font-semibold shadow-md active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   SAVE BOOKMARK
                 </button>
@@ -727,16 +641,19 @@ export default function App() {
 
       {/* New Section Modal */}
       {isSectionModalOpen && (
-        <div className="fixed inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+        <div 
+          onClick={() => setIsSectionModalOpen(false)}
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+        >
           <div 
-            className="w-full max-w-sm bg-[#faf8f5] dark:bg-[#121314] rounded-2xl shadow-2xl overflow-hidden border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 animate-in zoom-in-95 duration-200"
+            className="w-full max-w-sm bg-[#faf8f5]/95 dark:bg-[#121314]/95 backdrop-blur-2xl text-[#1c1c1c] dark:text-[#e5e5e1] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/15"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 flex items-center justify-between border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8">
-              <h2 className="text-xl font-serif-display font-medium italic text-[#1c1c1c] dark:text-[#e5e5e1]">Create Section</h2>
+            <div className="p-6 flex items-center justify-between border-b border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10">
+              <h2 className="text-2xl font-serif-display font-medium text-[#1c1c1c] dark:text-[#e5e5e1]">Create Section</h2>
               <button 
                 onClick={() => setIsSectionModalOpen(false)}
-                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
+                className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-full transition-all active:scale-90 cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -744,7 +661,7 @@ export default function App() {
             
             <form onSubmit={handleAddSection} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
                   Section Name
                 </label>
                 <input
@@ -754,7 +671,7 @@ export default function App() {
                   placeholder="e.g. Work, Priorities, Recipes"
                   value={newSectionName}
                   onChange={(e) => setNewSectionName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all text-xs"
+                  className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all text-xs font-sans-ui"
                 />
               </div>
 
@@ -762,7 +679,7 @@ export default function App() {
                 <button
                   type="submit"
                   disabled={!newSectionName.trim()}
-                  className="w-full py-2.5 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-mono-ui font-semibold shadow-xs hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full py-3 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-2xl font-sans-ui font-semibold shadow-md active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   CREATE SECTION
                 </button>
@@ -774,16 +691,19 @@ export default function App() {
 
       {/* Wallpaper Settings Modal */}
       {isWallpaperModalOpen && (
-        <div className="fixed inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+        <div 
+          onClick={() => setIsWallpaperModalOpen(false)}
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-200"
+        >
           <div 
-            className="w-full max-w-sm bg-[#faf8f5] dark:bg-[#121314] rounded-2xl shadow-2xl overflow-hidden border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 animate-in zoom-in-95 duration-200"
+            className="w-full max-w-sm bg-[#faf8f5]/95 dark:bg-[#121314]/95 backdrop-blur-2xl text-[#1c1c1c] dark:text-[#e5e5e1] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/15"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 flex items-center justify-between border-b border-[#1c1c1c]/8 dark:border-[#e5e5e1]/8">
-              <h2 className="text-xl font-serif-display font-medium italic text-[#1c1c1c] dark:text-[#e5e5e1]">Wallpaper Settings</h2>
+            <div className="p-6 flex items-center justify-between border-b border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10">
+              <h2 className="text-2xl font-serif-display font-medium text-[#1c1c1c] dark:text-[#e5e5e1]">Wallpaper Settings</h2>
               <button 
                 onClick={() => setIsWallpaperModalOpen(false)}
-                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg transition-colors cursor-pointer"
+                className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-full transition-all active:scale-90 cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -791,7 +711,7 @@ export default function App() {
             
             <div className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
                   Image URL
                 </label>
                 <input
@@ -799,12 +719,12 @@ export default function App() {
                   placeholder="https://example.com/image.jpg"
                   value={bgWallpaper}
                   onChange={(e) => setBgWallpaper(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-zinc-900/50 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 text-zinc-900 dark:text-zinc-100 placeholder-zinc-455 focus:outline-none focus:border-[#c85a32]/40 focus:ring-1 focus:ring-[#c85a32]/20 transition-all text-xs font-mono-ui"
+                  className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all text-xs font-sans-ui"
                 />
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                <div className="flex justify-between text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
                   <span>Opacity</span>
                   <span>{bgOpacity}%</span>
                 </div>
@@ -820,7 +740,7 @@ export default function App() {
               </div>
 
               <div>
-                <div className="flex justify-between text-xs font-mono-ui text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 mb-1.5 uppercase tracking-wider">
+                <div className="flex justify-between text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
                   <span>Blur</span>
                   <span>{bgBlur}px</span>
                 </div>
@@ -844,14 +764,14 @@ export default function App() {
                     setBgBlur(0);
                     setIsWallpaperModalOpen(false);
                   }}
-                  className="flex-1 py-2 px-3 border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10 hover:border-[#c85a32]/30 dark:hover:border-[#d36135]/30 text-[#1c1c1c]/60 dark:text-[#e5e5e1]/60 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg font-mono-ui text-xs transition-colors cursor-pointer text-center"
+                  className="flex-1 py-3 px-3 border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 hover:bg-black/5 dark:hover:bg-white/10 text-[#1c1c1c] dark:text-[#e5e5e1] rounded-2xl font-sans-ui text-xs transition-colors cursor-pointer text-center active:scale-95 font-semibold"
                 >
                   CLEAR
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsWallpaperModalOpen(false)}
-                  className="flex-1 py-2 px-3 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-mono-ui font-semibold shadow-xs transition-colors cursor-pointer text-center"
+                  className="flex-1 py-3 px-3 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-2xl font-sans-ui font-semibold shadow-md active:scale-95 transition-colors cursor-pointer text-center"
                 >
                   SAVE & CLOSE
                 </button>

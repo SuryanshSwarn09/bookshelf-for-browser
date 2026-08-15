@@ -21,7 +21,7 @@
   body {
     background-color: var(--bg-light);
     color: var(--text-light);
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
     @apply antialiased transition-colors duration-300;
   }
 
@@ -61,15 +61,15 @@
 
 /* Custom fonts utility classes */
 .font-serif-display {
-  font-family: 'Instrument Serif', Georgia, serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .font-sans-ui {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .font-mono-ui {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Styled animations for card entrance */
@@ -106,3 +106,152 @@
     opacity: 0.015;
   }
 }
+
+/* iOS Glassmorphism Utilities */
+.ios-glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark .ios-glass, @media (prefers-color-scheme: dark) {
+  .ios-glass {
+    background: rgba(22, 24, 28, 0.65);
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+.ios-glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.04), inset 0 1px 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ios-glass-card {
+    background: rgba(28, 30, 36, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  }
+}
+
+.ios-glass-card:hover {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 32px 0 rgba(200, 90, 50, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ios-glass-card:hover {
+    background: rgba(35, 38, 46, 0.75);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 36px 0 rgba(211, 97, 53, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+.ios-glass-pill {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ios-glass-pill {
+    background: rgba(26, 28, 34, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Animated iOS Ambient Background Mesh */
+.ambient-mesh-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.ambient-blob {
+  position: absolute;
+  filter: blur(80px);
+  opacity: 0.45;
+  border-radius: 50%;
+  animation: floatBlob 18s ease-in-out infinite alternate;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ambient-blob {
+    opacity: 0.25;
+    filter: blur(100px);
+  }
+}
+
+.ambient-blob-1 {
+  top: -10%;
+  left: 15%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(200, 90, 50, 0.35) 0%, rgba(245, 158, 11, 0.15) 100%);
+  animation-duration: 22s;
+}
+
+.ambient-blob-2 {
+  bottom: 5%;
+  right: 10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(236, 72, 153, 0.15) 100%);
+  animation-duration: 26s;
+  animation-delay: -5s;
+}
+
+.ambient-blob-3 {
+  top: 40%;
+  left: 50%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%);
+  animation-duration: 20s;
+  animation-delay: -10s;
+}
+
+@keyframes floatBlob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(40px, -30px) scale(1.08);
+  }
+  100% {
+    transform: translate(-30px, 40px) scale(0.95);
+  }
+}
+
+/* iOS Icon Squircle Class */
+.ios-squircle {
+  border-radius: 22.5%;
+}
+
+/* iOS Edit Mode Jiggle Animation */
+@keyframes iosJiggle {
+  0% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+  100% { transform: rotate(-1deg); }
+}
+.animate-jiggle {
+  animation: iosJiggle 0.3s ease-in-out infinite alternate;
+}
+
+
