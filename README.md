@@ -1,65 +1,40 @@
-# 📚 Bookshelf
+## Features & Version History
 
-A beautiful, minimalist, and dynamic personal bookmark dashboard designed to serve as your browser's default start page. Organized, responsive, and tailored for daily workspace efficiency.
+### Core Functionality
 
----
+* **Custom Categories:** Group shortcuts into custom workflow sections (e.g., Work, Entertainment, Tech).
+* **Always-On Drag & Drop:** Reorder bookmarks or move them across sections anytime using `@dnd-kit`.
+* **Adjustable Layouts:** Toggle icon grid density between Small (S), Medium (M), and Large (L).
+* **Smart Favicons:** Auto-fetch high-resolution site icons via Google Favicon API with manual refresh support.
+* **Backup & Sync:** Import/export data via JSON files.
+* **Custom Wallpapers & Themes:** Supports system light/dark themes and custom background image URLs with opacity/blur controls.
 
-##  Features
+### Recent UI & UX Enhancements
 
-- **Custom Sections**: Group your shortcuts into custom categories (e.g., Work, Entertainment, Tech) to match your workflow.
-- **Drag-and-Drop Sorting**: Seamlessly reorder bookmarks or move them between sections using fluid mouse/touch drag interactions powered by `@dnd-kit`.
-- **Adjustable Icon Sizing**: Instantly toggle between **Small (S)**, **Medium (M)**, and **Large (L)** layouts. The grid automatically adjusts to optimize your screen density.
-- **Smart Favicons**: Automatically fetches high-resolution site icons using Google's favicon API with an on-demand cache-busting refresh button.
-- **Backup & Sync**: Import and export your data as a clean JSON backup file to move your bookshelf setup to any device.
-- **Browser-Matched Themes**: Built-in responsive styling that aligns with your system’s light/dark settings.
-- **Custom Background Wallpaper**: Set any custom background image via URL with adjustable opacity blends and frosted blur filters.
-- **Pomodoro Focus Timer**: An inline productivity timer featuring a zero-dependency synthesized bell chime alert using browser Web Audio synthesis.
+* **iOS Glassmorphism:** Implemented continuous squircle tiles (`rounded-[22.5%]`), ambient animated background mesh, and floating glass pill docks for controls and section navigation.
+* **Jiggle Edit Mode:** Prominent Edit/Done toggle activates iOS-style tile jiggling with direct action badges for deletion (top-right) and favicon refresh (top-left).
+* **Navigation & Typography:** Bookmarks default to opening in new tabs (`target="_blank"`). Global typography updated to Google Fonts Poppins.
+* **Modal Accessibility & Contrast:** Redesigned popup modals with theme-matched container backgrounds, high-contrast input fields, keyboard `Esc` key dismissal, and backdrop click closing.
+* **Dock Streamlining:** Removed the Pomodoro clock widget for a minimal layout.
 
----
+## Setup & Deployment
 
-## Running Locally
+### Local Development
 
-### Prerequisites
+```bash
+npm install     # Install dependencies
+npm run dev     # Start development server at http://localhost:3000
+npm run lint    # Run code verification
 
-- **Node.js** (v18 or higher)
+```
 
-### Setup Instructions
+### Vercel Deployment
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+```bash
+npm install -g vercel   # Install Vercel CLI
+vercel                  # Initial deployment setup
+vercel --prod           # Deploy directly to production
 
-2. **Run in development mode**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-3. **Verify/Typecheck your code**:
-   ```bash
-   npm run lint
-   ```
+```
 
 ---
-
-## Deployment (Vercel)
-
-This application is ready to deploy directly to Vercel as a static Single Page Application (SPA).
-
-1. Install the Vercel CLI:
-   ```bash
-   npm install -g vercel
-   ```
-
-2. Run the deployment setup from the project root:
-   ```bash
-   vercel
-   ```
-
-3. Push directly to production:
-   ```bash
-   vercel --prod
-   ```
-
-*Refer to [vercel.json](vercel.json) in the root directory for routing rewrite rules.*
