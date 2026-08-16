@@ -116,7 +116,15 @@
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
 }
 
-.dark .ios-glass, @media (prefers-color-scheme: dark) {
+.dark .ios-glass {
+  background: rgba(22, 24, 28, 0.65);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
   .ios-glass {
     background: rgba(22, 24, 28, 0.65);
     backdrop-filter: blur(24px) saturate(190%);

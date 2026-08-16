@@ -16,7 +16,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Bookmark } from './types';
-import { extractDomain, getFaviconUrl, ensureProtocol, generateId } from './utils';
+import { extractDomain, getFaviconUrl, ensureProtocol, sanitizeUrl, generateId, storageAdapter, validateBackup } from './utils';
 import { SortableBookmark } from './components/SortableBookmark';
 
 const DEFAULT_BOOKMARKS: Bookmark[] = [
@@ -133,62 +133,54 @@ export default function App() {
     })
   );
 
-  // Load from localeStorage
+  // Load state from universal storageAdapter (chrome.storage with localStorage fallback)
   useEffect(() => {
-    const savedV2 = localStorage.getItem('bookshelf-data-v2');
-    if (savedV2) {
-      try {
-        const data = JSON.parse(savedV2);
-        setBookmarks(data.bookmarks || []);
-        setSections(data.sections || ['General', 'Work', 'Entertainment', 'Tech']);
-      } catch (e) {
-        setBookmarks(DEFAULT_BOOKMARKS);
-        setSections(['General', 'Work', 'Entertainment', 'Tech']);
+    let isMounted = true;
+    const loadState = async () => {
+      const dataV2 = await storageAdapter.getItem<{ bookmarks: Bookmark[]; sections: string[] }>('bookshelf-data-v2', {
+        bookmarks: DEFAULT_BOOKMARKS,
+        sections: ['General', 'Work', 'Entertainment', 'Tech'],
+      }, 'sync');
+
+      if (isMounted) {
+        setBookmarks(dataV2.bookmarks || DEFAULT_BOOKMARKS);
+        setSections(dataV2.sections || ['General', 'Work', 'Entertainment', 'Tech']);
       }
-    } else {
-      const saved = localStorage.getItem('bookshelf-data');
-      if (saved) {
-        try {
-          const oldBookmarks = JSON.parse(saved);
-          setBookmarks(oldBookmarks);
-          const derived = Array.from(new Set([...oldBookmarks.map((b: Bookmark) => b.category || 'General')]));
-          setSections(derived.length > 0 ? derived as string[] : ['General']);
-        } catch (e) {
-          setBookmarks(DEFAULT_BOOKMARKS);
-          setSections(['General', 'Work', 'Entertainment', 'Tech']);
-        }
-      } else {
-        setBookmarks(DEFAULT_BOOKMARKS);
-        setSections(['General', 'Work', 'Entertainment', 'Tech']);
+
+      const savedIconSize = await storageAdapter.getItem<'sm' | 'md' | 'lg'>('bookshelf-icon-size', 'md', 'sync');
+      if (isMounted && (savedIconSize === 'sm' || savedIconSize === 'md' || savedIconSize === 'lg')) {
+        setIconSize(savedIconSize);
       }
-    }
 
-    const savedIconSize = localStorage.getItem('bookshelf-icon-size');
-    if (savedIconSize === 'sm' || savedIconSize === 'md' || savedIconSize === 'lg') {
-      setIconSize(savedIconSize);
-    }
+      const savedActiveSection = await storageAdapter.getItem<string>('bookshelf-active-section', 'All', 'sync');
+      if (isMounted && savedActiveSection) {
+        setActiveSection(savedActiveSection);
+      }
 
-    const savedActiveSection = localStorage.getItem('bookshelf-active-section');
-    if (savedActiveSection) {
-      setActiveSection(savedActiveSection);
-    }
+      const savedBgWallpaper = await storageAdapter.getItem<string>('bookshelf-bg-wallpaper', '', 'local');
+      if (isMounted && savedBgWallpaper) {
+        setBgWallpaper(savedBgWallpaper);
+      }
 
-    const savedBgWallpaper = localStorage.getItem('bookshelf-bg-wallpaper');
-    if (savedBgWallpaper) {
-      setBgWallpaper(savedBgWallpaper);
-    }
+      const savedBgOpacity = await storageAdapter.getItem<number>('bookshelf-bg-opacity', 40, 'local');
+      if (isMounted && savedBgOpacity !== undefined) {
+        setBgOpacity(Number(savedBgOpacity));
+      }
 
-    const savedBgOpacity = localStorage.getItem('bookshelf-bg-opacity');
-    if (savedBgOpacity) {
-      setBgOpacity(Number(savedBgOpacity));
-    }
+      const savedBgBlur = await storageAdapter.getItem<number>('bookshelf-bg-blur', 0, 'local');
+      if (isMounted && savedBgBlur !== undefined) {
+        setBgBlur(Number(savedBgBlur));
+      }
 
-    const savedBgBlur = localStorage.getItem('bookshelf-bg-blur');
-    if (savedBgBlur) {
-      setBgBlur(Number(savedBgBlur));
-    }
+      if (isMounted) {
+        setIsReady(true);
+      }
+    };
 
-    setIsReady(true);
+    loadState();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Listen for Escape key to close modals
@@ -204,15 +196,15 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Save to localeStorage whenever bookmarks, sections, settings, wallpaper change
+  // Save state whenever bookmarks, sections, settings, or wallpaper change
   useEffect(() => {
     if (isReady) {
-      localStorage.setItem('bookshelf-data-v2', JSON.stringify({ bookmarks, sections }));
-      localStorage.setItem('bookshelf-icon-size', iconSize);
-      localStorage.setItem('bookshelf-active-section', activeSection);
-      localStorage.setItem('bookshelf-bg-wallpaper', bgWallpaper);
-      localStorage.setItem('bookshelf-bg-opacity', bgOpacity.toString());
-      localStorage.setItem('bookshelf-bg-blur', bgBlur.toString());
+      storageAdapter.setItem('bookshelf-data-v2', { bookmarks, sections }, 'sync');
+      storageAdapter.setItem('bookshelf-icon-size', iconSize, 'sync');
+      storageAdapter.setItem('bookshelf-active-section', activeSection, 'sync');
+      storageAdapter.setItem('bookshelf-bg-wallpaper', bgWallpaper, 'local');
+      storageAdapter.setItem('bookshelf-bg-opacity', bgOpacity, 'local');
+      storageAdapter.setItem('bookshelf-bg-blur', bgBlur, 'local');
     }
   }, [bookmarks, sections, iconSize, activeSection, bgWallpaper, bgOpacity, bgBlur, isReady]);
 
@@ -220,15 +212,15 @@ export default function App() {
     e.preventDefault();
     if (!newUrl) return;
 
-    const formattedUrl = ensureProtocol(newUrl);
-    const domain = extractDomain(formattedUrl);
+    const safeUrl = sanitizeUrl(newUrl);
+    const domain = extractDomain(safeUrl);
     const title = newTitle.trim() || domain;
     
     const newBookmark: Bookmark = {
       id: generateId(),
-      url: formattedUrl,
+      url: safeUrl,
       title,
-      iconUrl: getFaviconUrl(formattedUrl),
+      iconUrl: getFaviconUrl(safeUrl),
       createdAt: Date.now(),
       category: newCategory.trim() || 'General',
     };
@@ -284,11 +276,14 @@ export default function App() {
     reader.onload = (event) => {
       try {
         const json = JSON.parse(event.target?.result as string);
-        if (json.bookmarks && Array.isArray(json.bookmarks) && json.sections && Array.isArray(json.sections)) {
-          setBookmarks(json.bookmarks);
-          setSections(json.sections);
+        const validation = validateBackup(json);
+        if (validation.success) {
+          setBookmarks(validation.data.bookmarks);
+          if (validation.data.sections && validation.data.sections.length > 0) {
+            setSections(validation.data.sections);
+          }
         } else {
-          alert('Invalid backup file format.');
+          alert('Invalid backup file format. Please upload a valid Bookshelf JSON backup file.');
         }
       } catch (error) {
         alert('Failed to parse backup file.');
