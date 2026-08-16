@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, X, FolderPlus, Download, Upload, RefreshCw, Image, Pencil, Check } from 'lucide-react';
+import { Plus, Trash2, X, FolderPlus, Download, Upload, RefreshCw, Image, Pencil, Check, Search } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -94,8 +94,10 @@ export default function App() {
   
   const [newSectionName, setNewSectionName] = useState('');
 
-  // Edit Mode State
+  // Edit Mode & Search State
   const [isEditMode, setIsEditMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // File Input Ref for Import
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -183,13 +185,34 @@ export default function App() {
     };
   }, []);
 
-  // Listen for Escape key to close modals
+  // Global Keyboard Shortcuts (Cmd/Ctrl+K or / to search, N for add modal, E for edit mode, Esc to dismiss/clear)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      const activeTag = document.activeElement?.tagName || '';
+      const isInputActive = ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag);
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      } else if (e.key === '/' && !isInputActive) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      } else if (e.key === 'Escape') {
         setIsAddModalOpen(false);
         setIsSectionModalOpen(false);
         setIsWallpaperModalOpen(false);
+        setSearchQuery('');
+        if (isInputActive) {
+          (document.activeElement as HTMLElement)?.blur();
+        }
+      } else if (e.key.toLowerCase() === 'n' && !isInputActive) {
+        e.preventDefault();
+        setIsAddModalOpen(true);
+      } else if (e.key.toLowerCase() === 'e' && !isInputActive) {
+        e.preventDefault();
+        setIsEditMode(prev => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -360,6 +383,29 @@ export default function App() {
         
         {/* Floating iOS Controls Dock */}
         <div className="ios-glass-pill rounded-full p-2 flex flex-wrap items-center gap-2 self-stretch md:self-auto justify-end shadow-lg">
+          {/* Search Pill Input */}
+          <div className="flex items-center bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full border border-black/5 dark:border-white/10 text-xs text-[#1c1c1c] dark:text-[#e5e5e1]">
+            <Search size={14} className="text-zinc-500 dark:text-zinc-400 mr-2 shrink-0" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search (⌘K)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-transparent outline-none w-24 sm:w-32 text-xs text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-500 dark:placeholder:text-zinc-400 font-sans-ui"
+              aria-label="Search Bookmarks"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 ml-1 cursor-pointer"
+                aria-label="Clear Search"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+
           <input
             type="file"
             accept=".json"
@@ -371,6 +417,7 @@ export default function App() {
             onClick={() => fileInputRef.current?.click()}
             className="p-2 rounded-full text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:text-[#c85a32] dark:hover:text-[#d36135] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
             title="Import Backup"
+            aria-label="Import Backup"
           >
             <Upload size={15} />
           </button>
@@ -378,6 +425,7 @@ export default function App() {
             onClick={handleExport}
             className="p-2 rounded-full text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:text-[#c85a32] dark:hover:text-[#d36135] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
             title="Export Backup"
+            aria-label="Export Backup"
           >
             <Download size={15} />
           </button>
@@ -394,6 +442,7 @@ export default function App() {
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
                 title={`${size === 'sm' ? 'Small' : size === 'md' ? 'Medium' : 'Large'} Icons`}
+                aria-label={`Set icon size to ${size}`}
               >
                 {size.toUpperCase()}
               </button>
@@ -403,6 +452,7 @@ export default function App() {
           <button
             onClick={() => setIsSectionModalOpen(true)}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#1c1c1c]/10 dark:border-[#e5e5e1]/15 bg-white/40 dark:bg-black/30 hover:bg-[#c85a32]/10 dark:hover:bg-[#d36135]/15 text-xs font-mono-ui transition-all active:scale-95 cursor-pointer text-[#1c1c1c] dark:text-[#e5e5e1]"
+            aria-label="Create New Section"
           >
             <FolderPlus size={14} />
             <span>NEW SECTION</span>
@@ -413,6 +463,7 @@ export default function App() {
               onClick={handleFixAllFavicons}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-orange-500/15 text-orange-600 dark:text-orange-400 hover:bg-orange-500/25 border border-orange-500/30 transition-all text-xs font-mono-ui active:scale-95 cursor-pointer"
               title="Fix broken favicons"
+              aria-label="Fix broken favicons"
             >
               <RefreshCw size={14} />
               <span>FIX ({brokenIconIds.size})</span>
@@ -423,6 +474,7 @@ export default function App() {
             onClick={() => setIsWallpaperModalOpen(true)}
             className="p-2 rounded-full text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 hover:text-[#c85a32] dark:hover:text-[#d36135] hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
             title="Wallpaper Settings"
+            aria-label="Wallpaper Settings"
           >
             <Image size={16} />
           </button>
@@ -436,6 +488,7 @@ export default function App() {
                 : 'text-[#1c1c1c]/70 dark:text-[#e5e5e1]/70 border-[#1c1c1c]/10 dark:border-[#e5e5e1]/15 bg-white/40 dark:bg-black/30 hover:bg-[#c85a32]/10 dark:hover:bg-[#d36135]/15'
             }`}
             title="Toggle Edit Mode"
+            aria-label="Toggle Edit Mode"
           >
             {isEditMode ? <Check size={13} /> : <Pencil size={13} />}
             <span>{isEditMode ? 'DONE' : 'EDIT'}</span>
@@ -479,6 +532,23 @@ export default function App() {
           })}
         </div>
 
+        {/* Empty Search Results Card */}
+        {searchQuery.trim() && bookmarks.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase().trim()) || b.url.toLowerCase().includes(searchQuery.toLowerCase().trim())).length === 0 && (
+          <div className="w-full ios-glass-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-3 my-4 select-none">
+            <Search size={32} className="text-zinc-400 opacity-60" />
+            <h3 className="text-lg font-serif-display italic text-[#1c1c1c] dark:text-[#e5e5e1]">No bookmarks found</h3>
+            <p className="text-xs font-mono-ui text-zinc-500 dark:text-zinc-400">
+              No shortcuts match "{searchQuery}"
+            </p>
+            <button
+              onClick={() => setSearchQuery('')}
+              className="mt-1 px-4 py-1.5 rounded-full bg-[#c85a32] text-white text-xs font-mono-ui font-semibold shadow-md active:scale-95 transition-transform cursor-pointer"
+            >
+              CLEAR SEARCH
+            </button>
+          </div>
+        )}
+
         <DndContext 
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -487,8 +557,18 @@ export default function App() {
           {sections
             .filter((section) => activeSection === 'All' || activeSection === section)
             .map((section, index) => {
-              const sectionBookmarks = bookmarks.filter(b => (b.category || 'General') === section);
+              const query = searchQuery.trim().toLowerCase();
+              const sectionBookmarks = bookmarks.filter(b => {
+                const matchesSection = (b.category || 'General') === section;
+                if (!matchesSection) return false;
+                if (!query) return true;
+                return b.title.toLowerCase().includes(query) || b.url.toLowerCase().includes(query);
+              });
               
+              if (query && sectionBookmarks.length === 0) {
+                return null;
+              }
+
               return (
                 <React.Fragment key={section}>
                   {activeSection === 'All' && index > 0 && <hr className="w-full border-t border-[#1c1c1c]/8 dark:border-white/10" />}
