@@ -37,4 +37,6 @@ vercel --prod           # Deploy directly to production
 
 ```
 
----
+## License
+
+This project is licensed under the [MIT License](LICENSE).
