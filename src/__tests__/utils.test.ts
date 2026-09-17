@@ -11,10 +11,15 @@ import {
 
 describe('Utility Functions', () => {
   describe('extractDomain', () => {
-    it('should extract domain without www', () => {
+    it('should extract domain without leading www', () => {
       expect(extractDomain('https://www.github.com/profile')).toBe('github.com');
       expect(extractDomain('http://google.com')).toBe('google.com');
       expect(extractDomain('news.ycombinator.com')).toBe('news.ycombinator.com');
+    });
+
+    it('should not strip www if it is part of the domain name', () => {
+      expect(extractDomain('https://awww.com')).toBe('awww.com');
+      expect(extractDomain('https://subdomain.www.example.com')).toBe('subdomain.www.example.com');
     });
 
     it('should handle malformed URL gracefully', () => {
@@ -36,16 +41,31 @@ describe('Utility Functions', () => {
   describe('sanitizeUrl', () => {
     it('should sanitize javascript: URIs', () => {
       expect(sanitizeUrl('javascript:alert(1)')).toBe('#');
-      expect(sanitizeUrl('JAVASCRIPT:console.log("XSS")')).toBe('#');
+      expect(sanitizeUrl('  JAVASCRIPT:console.log("XSS")  ')).toBe('#');
+      expect(sanitizeUrl('java\0script:alert(1)')).toBe('#');
     });
 
-    it('should sanitize data:text/html URIs', () => {
+    it('should sanitize data: URIs', () => {
       expect(sanitizeUrl('data:text/html,<script>alert(1)</script>')).toBe('#');
+      expect(sanitizeUrl('data:image/svg+xml;base64,PHN2Zy...')).toBe('#');
+      expect(sanitizeUrl('data:application/javascript;alert(1)')).toBe('#');
+    });
+
+    it('should sanitize vbscript: and blob: URIs', () => {
+      expect(sanitizeUrl('vbscript:msgbox(1)')).toBe('#');
+      expect(sanitizeUrl('blob:http://example.com/uuid')).toBe('#');
+    });
+
+    it('should return # for empty or whitespace-only strings', () => {
+      expect(sanitizeUrl('')).toBe('#');
+      expect(sanitizeUrl('   ')).toBe('#');
     });
 
     it('should allow valid http and https URLs', () => {
       expect(sanitizeUrl('https://github.com')).toBe('https://github.com');
+      expect(sanitizeUrl('http://localhost:3000')).toBe('http://localhost:3000');
       expect(sanitizeUrl('google.com')).toBe('https://google.com');
+      expect(sanitizeUrl('sub.example.com/path?foo=bar#hash')).toBe('https://sub.example.com/path?foo=bar#hash');
     });
   });
 
@@ -88,6 +108,28 @@ describe('Utility Functions', () => {
       };
       const result = validateBackup(validPayload);
       expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.bookmarks[0].url).toBe('https://github.com');
+      }
+    });
+
+    it('should sanitize malicious bookmark URLs when validating backup', () => {
+      const maliciousPayload = {
+        bookmarks: [
+          {
+            id: 'evil-1',
+            url: 'javascript:alert("pwned")',
+            title: 'Hacked',
+            iconUrl: 'https://evil.com/icon.png',
+            createdAt: 1700000000000
+          }
+        ]
+      };
+      const result = validateBackup(maliciousPayload);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.bookmarks[0].url).toBe('#');
+      }
     });
 
     it('should reject invalid backup JSON missing required fields', () => {
