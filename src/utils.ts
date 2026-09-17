@@ -5,11 +5,11 @@ declare const chrome: any;
 
 export function extractDomain(url: string): string {
   try {
-    const urlToParse = url.startsWith('http') ? url : `https://${url}`;
+    const urlToParse = url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
     const domain = new URL(urlToParse).hostname;
-    return domain.replace('www.', '');
+    return domain.replace(/^www\./i, '');
   } catch (e) {
-    return url.replace('https://', '').replace('http://', '');
+    return url.replace(/^https?:\/\//i, '').replace(/^www\./i, '');
   }
 }
 
