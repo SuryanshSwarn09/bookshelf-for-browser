@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Trash2, RefreshCw } from 'lucide-react';
 import { Bookmark } from '../types';
+import { extractDomain } from '../utils';
 
 interface SortableBookmarkProps {
   key?: string | number;
@@ -136,12 +137,12 @@ function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconS
           />
         ) : (
           <span className={`font-serif-display ${currentSize.avatarText} italic font-semibold text-[#c85a32] dark:text-[#d36135] pointer-events-none select-none drop-shadow-xs`}>
-            {bookmark.title.charAt(0).toUpperCase()}
+            {(bookmark.title?.trim().charAt(0) || extractDomain(bookmark.url).charAt(0) || '?').toUpperCase()}
           </span>
         )}
       </div>
       <span className={`${currentSize.text} font-medium text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 group-hover:text-[#1c1c1c] dark:group-hover:text-white text-center w-full truncate px-1.5 select-none transition-colors duration-200`}>
-        {bookmark.title}
+        {bookmark.title || extractDomain(bookmark.url)}
       </span>
     </>
   );
