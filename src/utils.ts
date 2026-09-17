@@ -33,12 +33,28 @@ export function ensureProtocol(url: string): string {
   return trimmed;
 }
 
+const DANGEROUS_PROTOCOLS = /^(javascript|data|vbscript|blob):/i;
+
 export function sanitizeUrl(url: string): string {
-  const trimmed = url.trim();
-  if (/^javascript:/i.test(trimmed) || /^data:text\/html/i.test(trimmed)) {
+  const trimmed = (url || '').trim();
+  if (!trimmed) return '#';
+
+  // Strip ASCII control characters and whitespace within scheme check
+  const normalized = trimmed.replace(/[\u0000-\u001F\u007F-\u009F\s]+/g, '');
+  if (DANGEROUS_PROTOCOLS.test(normalized)) {
     return '#';
   }
-  return ensureProtocol(trimmed);
+
+  const withProtocol = ensureProtocol(trimmed);
+  try {
+    const parsed = new URL(withProtocol);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return '#';
+    }
+    return withProtocol;
+  } catch {
+    return '#';
+  }
 }
 
 export function generateId(): string {
@@ -48,7 +64,7 @@ export function generateId(): string {
 // Zod Schema for robust JSON Backup validation
 export const BookmarkSchema = z.object({
   id: z.string(),
-  url: z.string(),
+  url: z.string().transform(sanitizeUrl),
   title: z.string(),
   iconUrl: z.string(),
   createdAt: z.number(),
