@@ -183,4 +183,97 @@ export const storageAdapter = {
   }
 };
 
+// Resilient GitHub Integration Parser & Fetcher
+export interface GitHubFetchResult {
+  owner: string;
+  repo: string;
+  path: string;
+  branch: string;
+  content: string;
+  source: string;
+}
+
+export function parseGitHubUrl(inputUrl: string): { owner: string; repo: string; path: string; branch: string } {
+  const cleanInput = (inputUrl || '').trim().replace(/\/$/, '');
+  let owner = '';
+  let repo = '';
+  let path = 'README.md';
+  let branch = '';
+
+  const githubUrlMatch = cleanInput.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)(\/(blob|raw)\/([^\/]+)\/(.+))?$/i);
+  if (githubUrlMatch) {
+    owner = githubUrlMatch[1];
+    repo = githubUrlMatch[2].replace(/\.git$/i, '');
+    if (githubUrlMatch[5]) branch = githubUrlMatch[5];
+    if (githubUrlMatch[6]) path = githubUrlMatch[6];
+  } else {
+    const parts = cleanInput.replace(/^https?:\/\//i, '').split('/');
+    if (parts.length >= 2) {
+      owner = parts[0];
+      repo = parts[1].replace(/\.git$/i, '');
+    }
+  }
+
+  return { owner, repo, path, branch };
+}
+
+export async function fetchGitHubMarkdown(inputUrl: string, token?: string): Promise<GitHubFetchResult> {
+  const { owner, repo, path, branch } = parseGitHubUrl(inputUrl);
+
+  if (!owner || !repo) {
+    throw new Error('Invalid GitHub URL or owner/repo format. Example: https://github.com/owner/repo or owner/repo');
+  }
+
+  const headers: Record<string, string> = {
+    'Accept': 'application/vnd.github.v3.raw, text/plain, */*'
+  };
+  if (token && token.trim()) {
+    headers['Authorization'] = `token ${token.trim()}`;
+  }
+
+  // Strategy 1: GitHub API README / contents endpoint (Handles default branch dynamically)
+  try {
+    const apiEndpoint = path.toLowerCase() === 'readme.md'
+      ? `https://api.github.com/repos/${owner}/${repo}/readme`
+      : `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+
+    const res = await fetch(apiEndpoint, { headers });
+    if (res.ok) {
+      const text = await res.text();
+      return { owner, repo, path, branch: branch || 'default', content: text, source: 'github-api' };
+    }
+  } catch {
+    // Fall through to raw content strategy
+  }
+
+  // Strategy 2: Raw GitHub Content (specified branch or 'main')
+  const targetBranch = branch || 'main';
+  try {
+    const rawUrlMain = `https://raw.githubusercontent.com/${owner}/${repo}/${targetBranch}/${path}`;
+    const res = await fetch(rawUrlMain, { headers });
+    if (res.ok) {
+      const text = await res.text();
+      return { owner, repo, path, branch: targetBranch, content: text, source: 'raw-main' };
+    }
+  } catch {
+    // Fall through to master strategy
+  }
+
+  // Strategy 3: Raw GitHub Content ('master' branch fallback)
+  if (!branch) {
+    try {
+      const rawUrlMaster = `https://raw.githubusercontent.com/${owner}/${repo}/master/${path}`;
+      const res = await fetch(rawUrlMaster, { headers });
+      if (res.ok) {
+        const text = await res.text();
+        return { owner, repo, path, branch: 'master', content: text, source: 'raw-master' };
+      }
+    } catch {
+      // Fall through to final error
+    }
+  }
+
+  throw new Error(`Unable to fetch "${path}" from ${owner}/${repo}. Check that the repository is public and spelled correctly, or add a GitHub Personal Access Token.`);
+}
+
 

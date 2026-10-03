@@ -6,7 +6,9 @@ import {
   getFaviconUrl,
   generateId,
   validateBackup,
-  storageAdapter
+  storageAdapter,
+  parseGitHubUrl,
+  fetchGitHubMarkdown
 } from '../utils';
 
 describe('Utility Functions', () => {
@@ -162,6 +164,29 @@ describe('Utility Functions', () => {
       const defaultValue = { default: true };
       const retrieved = await storageAdapter.getItem('non-existent-key', defaultValue, 'sync');
       expect(retrieved).toEqual(defaultValue);
+    });
+  });
+
+  describe('parseGitHubUrl', () => {
+    it('should parse full GitHub URL', () => {
+      const res = parseGitHubUrl('https://github.com/SuryanshSwarn09/Git-doc');
+      expect(res.owner).toBe('SuryanshSwarn09');
+      expect(res.repo).toBe('Git-doc');
+      expect(res.path).toBe('README.md');
+    });
+
+    it('should parse owner/repo string format', () => {
+      const res = parseGitHubUrl('SuryanshSwarn09/Git-doc');
+      expect(res.owner).toBe('SuryanshSwarn09');
+      expect(res.repo).toBe('Git-doc');
+    });
+
+    it('should parse blob URL with custom path and branch', () => {
+      const res = parseGitHubUrl('https://github.com/SuryanshSwarn09/Git-doc/blob/main/docs/guide.md');
+      expect(res.owner).toBe('SuryanshSwarn09');
+      expect(res.repo).toBe('Git-doc');
+      expect(res.branch).toBe('main');
+      expect(res.path).toBe('docs/guide.md');
     });
   });
 });
