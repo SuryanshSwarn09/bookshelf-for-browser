@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { ThemePreset } from '../hooks/useSettings';
 
 interface WallpaperModalProps {
   isOpen: boolean;
@@ -10,6 +11,8 @@ interface WallpaperModalProps {
   setBgOpacity: (opacity: number) => void;
   bgBlur: number;
   setBgBlur: (blur: number) => void;
+  themePreset: ThemePreset;
+  setThemePreset: (theme: ThemePreset) => void;
 }
 
 export const WallpaperModal: React.FC<WallpaperModalProps> = ({
@@ -21,6 +24,8 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
   setBgOpacity,
   bgBlur,
   setBgBlur,
+  themePreset,
+  setThemePreset,
 }) => {
   if (!isOpen) return null;
 
@@ -28,6 +33,7 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
     setBgWallpaper('');
     setBgOpacity(40);
     setBgBlur(0);
+    setThemePreset('default');
     onClose();
   };
 
@@ -40,12 +46,12 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
       aria-labelledby="wallpaper-settings-title"
     >
       <div
-        className="w-full max-w-sm bg-[#faf8f5]/95 dark:bg-[#121314]/95 backdrop-blur-2xl text-[#1c1c1c] dark:text-[#e5e5e1] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/15"
+        className="w-full max-w-md bg-[#faf8f5]/95 dark:bg-[#121314]/95 backdrop-blur-2xl text-[#1c1c1c] dark:text-[#e5e5e1] rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/15"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 flex items-center justify-between border-b border-[#1c1c1c]/10 dark:border-[#e5e5e1]/10">
           <h2 id="wallpaper-settings-title" className="text-2xl font-serif-display font-medium text-[#1c1c1c] dark:text-[#e5e5e1]">
-            Wallpaper Settings
+            Theme & Appearance
           </h2>
           <button
             onClick={onClose}
@@ -57,9 +63,39 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
         </div>
 
         <div className="p-6 space-y-5">
+          {/* Theme Presets */}
+          <div>
+            <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-2 uppercase tracking-wider font-semibold">
+              Theme Preset
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'default', label: 'Default' },
+                { id: 'oled', label: 'OLED Black' },
+                { id: 'nordic', label: 'Nordic Frost' },
+                { id: 'sunset', label: 'Warm Sunset' },
+                { id: 'cyberpunk', label: 'Cyberpunk' },
+                { id: 'porcelain', label: 'Porcelain' },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setThemePreset(t.id as ThemePreset)}
+                  className={`py-2 px-2.5 rounded-xl text-[11px] font-sans-ui font-medium border transition-all cursor-pointer text-center ${
+                    themePreset === t.id
+                      ? 'bg-[#c85a32] dark:bg-[#d36135] text-white border-transparent font-bold shadow-md'
+                      : 'bg-white/50 dark:bg-white/5 border-[#1c1c1c]/10 dark:border-white/10 hover:border-[#c85a32]'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
-              Image URL
+              Custom Wallpaper URL
             </label>
             <input
               type="text"
@@ -108,7 +144,7 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
               onClick={handleClear}
               className="flex-1 py-3 px-3 border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 hover:bg-black/5 dark:hover:bg-white/10 text-[#1c1c1c] dark:text-[#e5e5e1] rounded-2xl font-sans-ui text-xs transition-colors cursor-pointer text-center active:scale-95 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
             >
-              CLEAR
+              RESET
             </button>
             <button
               type="button"

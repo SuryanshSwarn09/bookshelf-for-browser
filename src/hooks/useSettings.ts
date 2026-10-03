@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { storageAdapter } from '../utils';
 
+export type ThemePreset = 'default' | 'oled' | 'nordic' | 'sunset' | 'cyberpunk' | 'porcelain';
+
 export function useSettings() {
   const [iconSize, setIconSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [activeSection, setActiveSection] = useState<string>('All');
+  const [themePreset, setThemePreset] = useState<ThemePreset>('default');
   const [bgWallpaper, setBgWallpaper] = useState<string>('');
   const [bgOpacity, setBgOpacity] = useState<number>(40);
   const [bgBlur, setBgBlur] = useState<number>(0);
@@ -22,6 +25,11 @@ export function useSettings() {
       const savedActiveSection = await storageAdapter.getItem<string>('bookshelf-active-section', 'All', 'sync');
       if (isMounted && savedActiveSection) {
         setActiveSection(savedActiveSection);
+      }
+
+      const savedTheme = await storageAdapter.getItem<ThemePreset>('bookshelf-theme-preset', 'default', 'sync');
+      if (isMounted && savedTheme) {
+        setThemePreset(savedTheme);
       }
 
       const savedBgWallpaper = await storageAdapter.getItem<string>('bookshelf-bg-wallpaper', '', 'local');
@@ -50,15 +58,25 @@ export function useSettings() {
     };
   }, []);
 
+  // Update body class attribute when theme changes
+  useEffect(() => {
+    if (themePreset === 'default') {
+      document.body.className = '';
+    } else {
+      document.body.className = `theme-${themePreset}`;
+    }
+  }, [themePreset]);
+
   useEffect(() => {
     if (isSettingsReady) {
       storageAdapter.setItem('bookshelf-icon-size', iconSize, 'sync');
       storageAdapter.setItem('bookshelf-active-section', activeSection, 'sync');
+      storageAdapter.setItem('bookshelf-theme-preset', themePreset, 'sync');
       storageAdapter.setItem('bookshelf-bg-wallpaper', bgWallpaper, 'local');
       storageAdapter.setItem('bookshelf-bg-opacity', bgOpacity, 'local');
       storageAdapter.setItem('bookshelf-bg-blur', bgBlur, 'local');
     }
-  }, [iconSize, activeSection, bgWallpaper, bgOpacity, bgBlur, isSettingsReady]);
+  }, [iconSize, activeSection, themePreset, bgWallpaper, bgOpacity, bgBlur, isSettingsReady]);
 
   return {
     isSettingsReady,
@@ -66,6 +84,8 @@ export function useSettings() {
     setIconSize,
     activeSection,
     setActiveSection,
+    themePreset,
+    setThemePreset,
     bgWallpaper,
     setBgWallpaper,
     bgOpacity,

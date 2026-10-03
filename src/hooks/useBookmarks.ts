@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { Bookmark } from '../types';
-import { extractDomain, getFaviconUrl, sanitizeUrl, generateId, validateBackup, storageAdapter } from '../utils';
+import { extractDomain, getFaviconUrl, sanitizeUrl, generateId, validateBackup, storageAdapter, formatCleanTitle } from '../utils';
 
 export const DEFAULT_BOOKMARKS: Bookmark[] = [
   {
@@ -91,18 +91,18 @@ export function useBookmarks() {
     }));
   }, [brokenIconIds]);
 
-  const handleAddBookmark = useCallback((url: string, title: string, category: string) => {
+  const handleAddBookmark = useCallback((url: string, title: string, category: string, customIconUrl?: string) => {
     if (!url.trim()) return;
 
     const safeUrl = sanitizeUrl(url);
-    const domain = extractDomain(safeUrl);
-    const bookmarkTitle = title.trim() || domain;
+    const bookmarkTitle = formatCleanTitle(title, safeUrl);
     
     const newBookmark: Bookmark = {
       id: generateId(),
       url: safeUrl,
       title: bookmarkTitle,
       iconUrl: getFaviconUrl(safeUrl),
+      customIconUrl: customIconUrl?.trim() || undefined,
       createdAt: Date.now(),
       category: category.trim() || 'General',
     };

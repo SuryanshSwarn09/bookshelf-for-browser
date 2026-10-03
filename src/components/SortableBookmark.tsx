@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Trash2, RefreshCw } from 'lucide-react';
 import { Bookmark } from '../types';
-import { extractDomain } from '../utils';
+import { extractDomain, getFaviconFallbackUrls, getDeterministicGradient } from '../utils';
 
 interface SortableBookmarkProps {
   key?: string | number;
@@ -24,7 +24,7 @@ const sizeMap = {
     buttonIconSize: 11,
     gap: 'gap-1.5 sm:gap-2',
     overlayGap: 'gap-1',
-    avatarText: 'text-2xl',
+    avatarText: 'text-lg sm:text-xl font-bold',
   },
   md: {
     container: 'w-16 h-16 sm:w-20 sm:h-20 ios-squircle',
@@ -34,7 +34,7 @@ const sizeMap = {
     buttonIconSize: 13,
     gap: 'gap-2 sm:gap-2.5',
     overlayGap: 'gap-1.5',
-    avatarText: 'text-3xl',
+    avatarText: 'text-2xl sm:text-3xl font-bold',
   },
   lg: {
     container: 'w-20 h-20 sm:w-24 sm:h-24 ios-squircle',
@@ -44,7 +44,7 @@ const sizeMap = {
     buttonIconSize: 16,
     gap: 'gap-3 sm:gap-3.5',
     overlayGap: 'gap-2',
-    avatarText: 'text-4xl',
+    avatarText: 'text-3xl sm:text-4xl font-bold',
   }
 };
 
@@ -113,36 +113,80 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
 }
 
 function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconSize }: { bookmark: Bookmark, isEditMode: boolean, isDragging: boolean, onImageError: (id: string, isError: boolean) => void, iconSize: 'sm' | 'md' | 'lg' }) {
-  const [imgError, setImgError] = useState(false);
   const currentSize = sizeMap[iconSize] || sizeMap.md;
 
+  // Build candidate fallback image URLs array
+  const candidateUrls = useMemo(() => {
+    const list: string[] = [];
+    if (bookmark.customIconUrl?.trim()) {
+      list.push(bookmark.customIconUrl.trim());
+    }
+    if (bookmark.iconUrl?.trim()) {
+      list.push(bookmark.iconUrl.trim());
+    }
+    const fallbacks = getFaviconFallbackUrls(bookmark.url);
+    fallbacks.forEach(f => {
+      if (!list.includes(f)) list.push(f);
+    });
+    return list;
+  }, [bookmark.customIconUrl, bookmark.iconUrl, bookmark.url]);
+
+  const [candidateIndex, setCandidateIndex] = useState(0);
+
   useEffect(() => {
-    setImgError(false);
+    setCandidateIndex(0);
     onImageError(bookmark.id, false);
-  }, [bookmark.iconUrl, bookmark.id, onImageError]);
+  }, [bookmark.iconUrl, bookmark.customIconUrl, bookmark.url, bookmark.id, onImageError]);
+
+  const activeSrc = candidateUrls[candidateIndex];
+  const allImagesFailed = candidateIndex >= candidateUrls.length || !activeSrc;
+
+  // Initial letter and gradient styling for fallback avatar
+  const initialChar = useMemo(() => {
+    const title = (bookmark.title || '').trim();
+    if (title && title.toLowerCase() !== 'unnamed') return title.charAt(0).toUpperCase();
+    const dom = extractDomain(bookmark.url);
+    if (dom && dom !== 'not-a-valid-url') return dom.charAt(0).toUpperCase();
+    return 'U';
+  }, [bookmark.title, bookmark.url]);
+
+  const gradient = useMemo(() => {
+    return getDeterministicGradient(bookmark.title || bookmark.url);
+  }, [bookmark.title, bookmark.url]);
+
+  const handleImgError = () => {
+    if (candidateIndex + 1 < candidateUrls.length) {
+      setCandidateIndex(prev => prev + 1);
+    } else {
+      setCandidateIndex(candidateUrls.length); // trigger allImagesFailed
+      onImageError(bookmark.id, true);
+    }
+  };
 
   return (
     <>
       <div className={`relative ${currentSize.container} ios-glass-card overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-active:scale-95 ${isDragging ? 'shadow-2xl border-[#c85a32]/40 dark:border-[#d36135]/40 scale-110' : ''}`}>
-        {!imgError ? (
+        {!allImagesFailed ? (
           <img 
-            src={bookmark.iconUrl} 
-            alt={bookmark.title}
+            src={activeSrc} 
+            alt={bookmark.title || 'Bookmark'}
             className={`${currentSize.icon} object-contain transition-transform duration-300 group-hover:scale-105 ${isEditMode ? 'pointer-events-none' : ''}`}
             draggable={false}
-            onError={() => {
-              setImgError(true);
-              onImageError(bookmark.id, true);
-            }}
+            onError={handleImgError}
           />
         ) : (
-          <span className={`font-serif-display ${currentSize.avatarText} italic font-semibold text-[#c85a32] dark:text-[#d36135] pointer-events-none select-none drop-shadow-xs`}>
-            {(bookmark.title?.trim().charAt(0) || extractDomain(bookmark.url).charAt(0) || '?').toUpperCase()}
-          </span>
+          <div 
+            className="w-full h-full flex items-center justify-center pointer-events-none select-none shadow-inner"
+            style={{ background: gradient.bg, color: gradient.text }}
+          >
+            <span className={`font-sans-ui ${currentSize.avatarText} tracking-tight drop-shadow-md`}>
+              {initialChar}
+            </span>
+          </div>
         )}
       </div>
       <span className={`${currentSize.text} font-medium text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 group-hover:text-[#1c1c1c] dark:group-hover:text-white text-center w-full truncate px-1.5 select-none transition-colors duration-200`}>
-        {bookmark.title || extractDomain(bookmark.url)}
+        {bookmark.title || extractDomain(bookmark.url) || 'Unnamed'}
       </span>
     </>
   );

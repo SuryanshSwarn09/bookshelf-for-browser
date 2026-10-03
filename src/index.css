@@ -25,8 +25,34 @@
     @apply antialiased transition-colors duration-300;
   }
 
+  /* Theme Presets */
+  body.theme-oled {
+    background-color: #050505 !important;
+    color: #f0f0f0 !important;
+  }
+
+  body.theme-nordic {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+  }
+
+  body.theme-sunset {
+    background-color: #181311 !important;
+    color: #f3efe6 !important;
+  }
+
+  body.theme-cyberpunk {
+    background-color: #0d0814 !important;
+    color: #f5f3ff !important;
+  }
+
+  body.theme-porcelain {
+    background-color: #f4f4f0 !important;
+    color: #1a1a1a !important;
+  }
+
   @media (prefers-color-scheme: dark) {
-    body {
+    body:not([class*="theme-"]) {
       background-color: var(--bg-dark);
       color: var(--text-dark);
     }

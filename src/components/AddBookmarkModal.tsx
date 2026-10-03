@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 interface AddBookmarkModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddBookmark: (url: string, title: string, category: string) => void;
+  onAddBookmark: (url: string, title: string, category: string, customIconUrl?: string) => void;
   sections: string[];
   initialCategory: string;
 }
@@ -18,6 +18,7 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
 }) => {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
+  const [customIconUrl, setCustomIconUrl] = useState('');
   const [category, setCategory] = useState(initialCategory || 'General');
 
   useEffect(() => {
@@ -29,9 +30,10 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
-    onAddBookmark(url, title, category);
+    onAddBookmark(url, title, category, customIconUrl);
     setUrl('');
     setTitle('');
+    setCustomIconUrl('');
     onClose();
   };
 
@@ -63,13 +65,13 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
-              Website URL
+              Website URL *
             </label>
             <input
               type="text"
               required
               autoFocus
-              placeholder="e.g. news.ycombinator.com"
+              placeholder="e.g. github.com/trending"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all font-sans-ui text-xs"
@@ -82,9 +84,22 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
             </label>
             <input
               type="text"
-              placeholder="Leave empty to use domain name"
+              placeholder="Leave blank for clean domain or 'Unnamed'"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all text-xs"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
+              Custom Icon URL (Optional)
+            </label>
+            <input
+              type="text"
+              placeholder="https://example.com/logo.png"
+              value={customIconUrl}
+              onChange={(e) => setCustomIconUrl(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-[#1c1e22] border border-[#1c1c1c]/15 dark:border-[#e5e5e1]/20 text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#c85a32] dark:focus:border-[#d36135] focus:ring-2 focus:ring-[#c85a32]/20 dark:focus:ring-[#d36135]/20 transition-all text-xs"
             />
           </div>

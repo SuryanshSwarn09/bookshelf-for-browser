@@ -3,6 +3,7 @@ export interface Bookmark {
   url: string;
   title: string;
   iconUrl: string;
+  customIconUrl?: string;
   createdAt: number;
   category?: string;
 }

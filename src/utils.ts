@@ -15,14 +15,57 @@ export function extractDomain(url: string): string {
 
 export function getFaviconUrl(url: string, forceRefresh: boolean = false): string {
   try {
-    const urlToParse = url.startsWith('http') ? url : `https://${url}`;
-    const domain = new URL(urlToParse).hostname;
-    // Using Google's favicon service for reliable 128px icons
+    const domain = extractDomain(url);
+    if (!domain) return '';
     const baseUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     return forceRefresh ? `${baseUrl}&cb=${Date.now()}` : baseUrl;
   } catch (e) {
     return '';
   }
+}
+
+export function getFaviconFallbackUrls(url: string, forceRefresh: boolean = false): string[] {
+  try {
+    const domain = extractDomain(url);
+    if (!domain || domain === 'not-a-valid-url') return [];
+    const cb = forceRefresh ? `?cb=${Date.now()}` : '';
+    return [
+      `https://www.google.com/s2/favicons?domain=${domain}&sz=128${cb ? '&' + cb.slice(1) : ''}`,
+      `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+      `https://icon.horse/icon/${domain}`,
+      `https://${domain}/favicon.ico${cb}`
+    ];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function getDeterministicGradient(seedStr: string): { bg: string; text: string } {
+  const str = (seedStr || 'Unnamed').toLowerCase().trim();
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  const hue1 = Math.abs(hash) % 360;
+  const hue2 = (hue1 + 45) % 360;
+  
+  return {
+    bg: `linear-gradient(135deg, hsl(${hue1}, 70%, 45%) 0%, hsl(${hue2}, 80%, 35%) 100%)`,
+    text: '#ffffff',
+  };
+}
+
+export function formatCleanTitle(userTitle: string, rawUrl: string): string {
+  const trimmed = (userTitle || '').trim();
+  if (trimmed) return trimmed;
+
+  const domain = extractDomain(rawUrl);
+  if (domain && domain !== 'not-a-valid-url' && !domain.startsWith('#')) {
+    return domain;
+  }
+
+  return 'Unnamed';
 }
 
 export function ensureProtocol(url: string): string {
@@ -67,6 +110,7 @@ export const BookmarkSchema = z.object({
   url: z.string().transform(sanitizeUrl),
   title: z.string(),
   iconUrl: z.string(),
+  customIconUrl: z.string().optional(),
   createdAt: z.number(),
   category: z.string().optional()
 });

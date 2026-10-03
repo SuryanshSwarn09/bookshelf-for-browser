@@ -79,6 +79,8 @@ export default function App() {
     setBgOpacity,
     bgBlur,
     setBgBlur,
+    themePreset,
+    setThemePreset,
     isEditMode,
     setIsEditMode,
     searchQuery,
@@ -317,6 +319,8 @@ export default function App() {
         setBgOpacity={setBgOpacity}
         bgBlur={bgBlur}
         setBgBlur={setBgBlur}
+        themePreset={themePreset}
+        setThemePreset={setThemePreset}
       />
 
       {/* Noise background texture overlay */}
