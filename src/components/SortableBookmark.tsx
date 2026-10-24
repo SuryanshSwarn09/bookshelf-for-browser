@@ -93,7 +93,7 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
           <button 
             onClick={(e) => onRefreshFavicon(e, bookmark.id)}
             onPointerDown={(e) => e.stopPropagation()}
-            className="absolute -top-1 -left-1 p-1 bg-amber-500/90 hover:bg-amber-500 text-white rounded-full shadow-md hover:scale-115 active:scale-90 transition-all cursor-pointer z-20 backdrop-blur-md"
+            className="absolute -top-1 -left-1 p-1 bg-amber-500/90 hover:bg-amber-500 text-white rounded-md border border-white/20 shadow-md hover:scale-110 active:scale-90 transition-all cursor-pointer z-20 backdrop-blur-md"
             title="Refresh Favicon"
           >
             <RefreshCw size={11} />
@@ -101,7 +101,7 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
           <button 
             onClick={(e) => onDelete(e, bookmark.id)}
             onPointerDown={(e) => e.stopPropagation()}
-            className="absolute -top-1 -right-1 p-1 bg-red-500/90 hover:bg-red-500 text-white rounded-full shadow-md hover:scale-115 active:scale-90 transition-all cursor-pointer z-20 backdrop-blur-md"
+            className="absolute -top-1 -right-1 p-1 bg-red-500/90 hover:bg-red-500 text-white rounded-md border border-white/20 shadow-md hover:scale-110 active:scale-90 transition-all cursor-pointer z-20 backdrop-blur-md"
             title="Delete Bookmark"
           >
             <Trash2 size={11} />

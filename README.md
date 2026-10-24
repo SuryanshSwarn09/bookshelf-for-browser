@@ -11,10 +11,10 @@
 
 ### Recent UI & UX Enhancements
 
-* **iOS Glassmorphism:** Implemented continuous squircle tiles (`rounded-[22.5%]`), ambient animated background mesh, and floating glass pill docks for controls and section navigation.
-* **Jiggle Edit Mode:** Prominent Edit/Done toggle activates iOS-style tile jiggling with direct action badges for deletion (top-right) and favicon refresh (top-left).
-* **Navigation & Typography:** Bookmarks default to opening in new tabs (`target="_blank"`). Global typography updated to Google Fonts Poppins.
-* **Modal Accessibility & Contrast:** Redesigned popup modals with theme-matched container backgrounds, high-contrast input fields, keyboard `Esc` key dismissal, and backdrop click closing.
+* **Tactile Glassmorphism:** Implemented continuous squircle tiles (`rounded-[22.5%]`), clean monochromatic noise texture backdrop, and crisp geometric docks (`rounded-xl` / `rounded-lg`) for controls and section navigation.
+* **Jiggle Edit Mode:** Prominent Edit/Done toggle activates tile jiggling with direct action badges for deletion (top-right) and favicon refresh (top-left).
+* **Navigation & Typography:** Bookmarks default to opening in new tabs (`target="_blank"`). Global typography updated to Google Fonts Poppins with crisp mono status labels.
+* **Modal Accessibility & Legal Dialogs:** Redesigned popup modals with theme-matched container backgrounds, high-contrast input fields, keyboard `Esc` key dismissal, backdrop click closing, and added authentic Privacy Policy and Terms of Service dialogs.
 * **Dock Streamlining:** Removed the Pomodoro clock widget for a minimal layout.
 
 ## Setup & Deployment
@@ -49,7 +49,7 @@ vercel --prod           # Deploy directly to production
 | :--- | :--- | :--- |
 | **Framework & Runtime** | React 19, TypeScript 5.8 | Modern component architecture & strict compile-time type safety |
 | **Build & Bundler** | Vite 6, Esbuild | Instant HMR dev server and optimized production assets bundler |
-| **Styling & Aesthetics** | TailwindCSS v4, Vanilla CSS | Continuous squircle geometry, glassmorphism, ambient blob animations |
+| **Styling & Aesthetics** | TailwindCSS v4, Vanilla CSS | Continuous squircle geometry, tactile glassmorphism, subtle noise textures |
 | **Drag & Drop** | `@dnd-kit/core`, `@dnd-kit/sortable` | Accessibility-compliant, multi-sensor grid reordering |
 | **Validation & Schema** | Zod 3 | Runtime validation for imported backup JSON structures |
 | **Icons & Typography** | Lucide React, Google Fonts | Poppins font & vector micro-iconography |

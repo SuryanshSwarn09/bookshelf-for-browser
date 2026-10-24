@@ -41,9 +41,9 @@
     color: #f3efe6 !important;
   }
 
-  body.theme-cyberpunk {
-    background-color: #0d0814 !important;
-    color: #f5f3ff !important;
+  body.theme-graphite {
+    background-color: #18181b !important;
+    color: #f4f4f5 !important;
   }
 
   body.theme-porcelain {
@@ -68,7 +68,7 @@
   }
   ::-webkit-scrollbar-thumb {
     background-color: rgba(28, 28, 28, 0.1);
-    border-radius: 9999px;
+    border-radius: 4px;
   }
   @media (prefers-color-scheme: dark) {
     ::-webkit-scrollbar-thumb {
@@ -191,61 +191,63 @@
 }
 
 .ios-glass-pill {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
 }
 
 @media (prefers-color-scheme: dark) {
   .ios-glass-pill {
-    background: rgba(26, 28, 34, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    background: rgba(24, 24, 27, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
   }
 }
 
-/* Premium iOS Glass Modal Sheet */
+/* Structured Glass Modal Sheet */
 .ios-glass-modal {
-  background: rgba(250, 248, 245, 0.88);
-  backdrop-filter: blur(32px) saturate(190%);
-  -webkit-backdrop-filter: blur(32px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.6), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  background: rgba(250, 248, 245, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 @media (prefers-color-scheme: dark) {
   .ios-glass-modal {
-    background: rgba(18, 20, 24, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+    background: rgba(18, 20, 24, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
   }
 }
 
 body.theme-oled .ios-glass-modal {
-  background: rgba(8, 8, 8, 0.92) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(8, 8, 8, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 body.theme-nordic .ios-glass-modal {
-  background: rgba(15, 23, 42, 0.9) !important;
-  border-color: rgba(148, 163, 184, 0.2) !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  border-color: rgba(148, 163, 184, 0.15) !important;
 }
 
 body.theme-sunset .ios-glass-modal {
-  background: rgba(24, 19, 17, 0.9) !important;
-  border-color: rgba(211, 97, 53, 0.2) !important;
+  background: rgba(24, 19, 17, 0.92) !important;
+  border-color: rgba(211, 97, 53, 0.15) !important;
 }
 
-body.theme-cyberpunk .ios-glass-modal {
-  background: rgba(13, 8, 20, 0.92) !important;
-  border-color: rgba(168, 85, 247, 0.25) !important;
+body.theme-graphite .ios-glass-modal {
+  background: rgba(24, 24, 27, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 body.theme-porcelain .ios-glass-modal {
-  background: rgba(244, 244, 240, 0.92) !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(244, 244, 240, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Glassmorphic Input Controls */
@@ -254,6 +256,7 @@ body.theme-porcelain .ios-glass-modal {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -269,81 +272,14 @@ body.theme-porcelain .ios-glass-modal {
 .ios-glass-input:focus-within,
 .ios-glass-input:focus {
   border-color: #c85a32;
-  box-shadow: 0 0 0 3px rgba(200, 90, 50, 0.18), inset 0 1px 1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 0 0 2px rgba(200, 90, 50, 0.18), inset 0 1px 1px rgba(0, 0, 0, 0.02);
 }
 
 @media (prefers-color-scheme: dark) {
   .ios-glass-input:focus-within,
   .ios-glass-input:focus {
     border-color: #d36135;
-    box-shadow: 0 0 0 3px rgba(211, 97, 53, 0.25), inset 0 1px 1px rgba(0, 0, 0, 0.1);
-  }
-}
-
-/* Animated iOS Ambient Background Mesh */
-.ambient-mesh-container {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -2;
-}
-
-.ambient-blob {
-  position: absolute;
-  filter: blur(80px);
-  opacity: 0.45;
-  border-radius: 50%;
-  animation: floatBlob 18s ease-in-out infinite alternate;
-}
-
-@media (prefers-color-scheme: dark) {
-  .ambient-blob {
-    opacity: 0.25;
-    filter: blur(100px);
-  }
-}
-
-.ambient-blob-1 {
-  top: -10%;
-  left: 15%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(200, 90, 50, 0.35) 0%, rgba(245, 158, 11, 0.15) 100%);
-  animation-duration: 22s;
-}
-
-.ambient-blob-2 {
-  bottom: 5%;
-  right: 10%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(236, 72, 153, 0.15) 100%);
-  animation-duration: 26s;
-  animation-delay: -5s;
-}
-
-.ambient-blob-3 {
-  top: 40%;
-  left: 50%;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%);
-  animation-duration: 20s;
-  animation-delay: -10s;
-}
-
-@keyframes floatBlob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  50% {
-    transform: translate(40px, -30px) scale(1.08);
-  }
-  100% {
-    transform: translate(-30px, 40px) scale(0.95);
+    box-shadow: 0 0 0 2px rgba(211, 97, 53, 0.25), inset 0 1px 1px rgba(0, 0, 0, 0.1);
   }
 }
 

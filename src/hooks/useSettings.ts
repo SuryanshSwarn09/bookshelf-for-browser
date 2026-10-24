@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { storageAdapter } from '../utils';
 
-export type ThemePreset = 'default' | 'oled' | 'nordic' | 'sunset' | 'cyberpunk' | 'porcelain';
+export type ThemePreset = 'default' | 'oled' | 'nordic' | 'sunset' | 'graphite' | 'porcelain';
 
 export function useSettings() {
   const [iconSize, setIconSize] = useState<'sm' | 'md' | 'lg'>('md');
@@ -27,9 +27,13 @@ export function useSettings() {
         setActiveSection(savedActiveSection);
       }
 
-      const savedTheme = await storageAdapter.getItem<ThemePreset>('bookshelf-theme-preset', 'default', 'sync');
+      const savedTheme = await storageAdapter.getItem<string>('bookshelf-theme-preset', 'default', 'sync');
       if (isMounted && savedTheme) {
-        setThemePreset(savedTheme);
+        if (savedTheme === 'cyberpunk') {
+          setThemePreset('graphite');
+        } else if (['default', 'oled', 'nordic', 'sunset', 'graphite', 'porcelain'].includes(savedTheme)) {
+          setThemePreset(savedTheme as ThemePreset);
+        }
       }
 
       const savedBgWallpaper = await storageAdapter.getItem<string>('bookshelf-bg-wallpaper', '', 'local');

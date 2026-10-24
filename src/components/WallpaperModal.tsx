@@ -51,11 +51,11 @@ const THEME_OPTIONS: Array<{
     accentClass: 'bg-[#ea580c]',
   },
   {
-    id: 'cyberpunk',
-    label: 'Cyberpunk',
-    desc: 'Deep violet & neon',
-    bgClass: 'bg-[#0d0814] border-purple-500/25',
-    accentClass: 'bg-[#d946ef]',
+    id: 'graphite',
+    label: 'Graphite',
+    desc: 'Slate charcoal & cool white',
+    bgClass: 'bg-[#18181b] border-white/15',
+    accentClass: 'bg-[#f4f4f5]',
   },
   {
     id: 'porcelain',
@@ -96,13 +96,13 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
       aria-labelledby="wallpaper-settings-title"
     >
       <div
-        className="w-full max-w-lg ios-glass-modal text-[#1c1c1c] dark:text-[#e5e5e1] rounded-[28px] overflow-hidden animate-in zoom-in-95 duration-200"
+        className="w-full max-w-lg ios-glass-modal text-[#1c1c1c] dark:text-[#e5e5e1] rounded-2xl overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Bar */}
         <div className="px-6 py-5 flex items-center justify-between border-b border-black/5 dark:border-white/10">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#c85a32]/10 dark:bg-[#d36135]/20 flex items-center justify-center text-[#c85a32] dark:text-[#d36135]">
+            <div className="w-8 h-8 rounded-lg bg-[#c85a32]/10 dark:bg-[#d36135]/20 flex items-center justify-center text-[#c85a32] dark:text-[#d36135]">
               <Palette size={16} />
             </div>
             <div>
@@ -116,7 +116,7 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-full transition-all active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
+            className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
             aria-label="Close modal"
           >
             <X size={16} />
@@ -137,7 +137,7 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
                     key={t.id}
                     type="button"
                     onClick={() => setThemePreset(t.id)}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative group flex flex-col gap-1 active:scale-95 ${
+                    className={`p-3 rounded-lg border text-left transition-all cursor-pointer relative group flex flex-col gap-1 active:scale-95 ${
                       isSelected
                         ? 'border-[#c85a32] dark:border-[#d36135] bg-[#c85a32]/10 dark:bg-[#d36135]/15 shadow-sm'
                         : 'border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.03] hover:border-black/20 dark:hover:border-white/20'
@@ -145,8 +145,8 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <div className={`w-3.5 h-3.5 rounded-full border shadow-sm flex items-center justify-center ${t.bgClass}`}>
-                          <div className={`w-1.5 h-1.5 rounded-full ${t.accentClass}`} />
+                        <div className={`w-3.5 h-3.5 rounded-sm border shadow-sm flex items-center justify-center ${t.bgClass}`}>
+                          <div className={`w-1.5 h-1.5 rounded-sm ${t.accentClass}`} />
                         </div>
                         <span className="text-xs font-sans-ui font-semibold text-[#1c1c1c] dark:text-[#e5e5e1]">
                           {t.label}
@@ -177,13 +177,13 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
                 placeholder="https://images.unsplash.com/photo-..."
                 value={bgWallpaper}
                 onChange={(e) => setBgWallpaper(e.target.value)}
-                className="w-full pl-10 pr-9 py-2.5 rounded-2xl ios-glass-input text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 font-sans-ui text-xs outline-none"
+                className="w-full pl-10 pr-9 py-2.5 rounded-lg ios-glass-input text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 font-sans-ui text-xs outline-none"
               />
               {bgWallpaper && (
                 <button
                   type="button"
                   onClick={() => setBgWallpaper('')}
-                  className="absolute right-3 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer rounded-full"
+                  className="absolute right-3 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer rounded"
                   title="Remove Wallpaper"
                 >
                   <X size={13} />
@@ -193,13 +193,13 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
           </div>
 
           {/* Opacity & Blur Sliders */}
-          <div className="p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 space-y-4">
+          <div className="p-4 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 space-y-4">
             <div>
               <div className="flex justify-between items-center text-xs font-sans-ui mb-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90">
                   Wallpaper Opacity
                 </span>
-                <span className="text-[11px] font-mono-ui font-semibold px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[#c85a32] dark:text-[#d36135]">
+                <span className="text-[11px] font-mono-ui font-semibold px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[#c85a32] dark:text-[#d36135]">
                   {bgOpacity}%
                 </span>
               </div>
@@ -219,7 +219,7 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90">
                   Backdrop Blur
                 </span>
-                <span className="text-[11px] font-mono-ui font-semibold px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-[#c85a32] dark:text-[#d36135]">
+                <span className="text-[11px] font-mono-ui font-semibold px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[#c85a32] dark:text-[#d36135]">
                   {bgBlur}px
                 </span>
               </div>
@@ -240,7 +240,7 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
             <button
               type="button"
               onClick={handleClear}
-              className="flex-1 py-3 px-3 rounded-2xl ios-glass-pill text-xs font-mono-ui font-semibold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 text-center flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 px-3 rounded-lg ios-glass-pill text-xs font-mono-ui font-semibold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 text-center flex items-center justify-center gap-1.5"
             >
               <RotateCcw size={13} />
               <span>RESET</span>
@@ -248,7 +248,7 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-[2] py-3 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-2xl font-sans-ui text-xs font-semibold shadow-lg shadow-[#c85a32]/25 active:scale-98 transition-all cursor-pointer text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#c85a32]"
+              className="flex-[2] py-2.5 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-sans-ui text-xs font-semibold shadow-md active:scale-98 transition-all cursor-pointer text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#c85a32]"
             >
               SAVE & APPLY
             </button>
@@ -258,4 +258,3 @@ export const WallpaperModal: React.FC<WallpaperModalProps> = ({
     </div>
   );
 };
-

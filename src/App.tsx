@@ -21,6 +21,8 @@ import { SortableBookmark } from './components/SortableBookmark';
 import { AddBookmarkModal } from './components/AddBookmarkModal';
 import { SectionModal } from './components/SectionModal';
 import { WallpaperModal } from './components/WallpaperModal';
+import { PrivacyModal } from './components/PrivacyModal';
+import { TermsModal } from './components/TermsModal';
 
 const gridClasses = {
   sm: 'grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 gap-y-6 gap-x-3',
@@ -91,6 +93,8 @@ export default function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [addModalCategory, setAddModalCategory] = useState('General');
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -124,6 +128,8 @@ export default function App() {
         setIsAddModalOpen(false);
         setIsSectionModalOpen(false);
         setIsWallpaperModalOpen(false);
+        setIsPrivacyModalOpen(false);
+        setIsTermsModalOpen(false);
         setSearchQuery('');
         if (isInputActive) {
           (document.activeElement as HTMLElement)?.blur();
@@ -144,12 +150,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-6 sm:p-10 md:p-14 transition-colors duration-300 flex flex-col items-center w-full">
-      {/* iOS Ambient Blob Mesh */}
-      <div className="ambient-mesh-container">
-        <div className="ambient-blob ambient-blob-1" />
-        <div className="ambient-blob ambient-blob-2" />
-        <div className="ambient-blob ambient-blob-3" />
-      </div>
 
       {/* Background Wallpaper Backdrop */}
       {bgWallpaper && (
@@ -200,7 +200,7 @@ export default function App() {
             </p>
             <button
               onClick={() => setSearchQuery('')}
-              className="mt-1 px-4 py-1.5 rounded-full bg-[#c85a32] text-white text-xs font-mono-ui font-semibold shadow-md active:scale-95 transition-transform cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
+              className="mt-1 px-4 py-1.5 rounded-lg bg-[#c85a32] text-white text-xs font-mono-ui font-semibold shadow-md active:scale-95 transition-transform cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
             >
               CLEAR SEARCH
             </button>
@@ -234,14 +234,14 @@ export default function App() {
                     <div className="flex items-center justify-between mb-4">
                       <h2 id={`section-heading-${section}`} className="text-xl font-serif-display italic font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1] flex items-center gap-3">
                         {section}
-                        <span className="text-[10px] font-mono-ui font-normal text-zinc-500 dark:text-zinc-400 bg-black/5 dark:bg-white/10 px-2.5 py-0.5 rounded-full">
+                        <span className="text-[10px] font-mono-ui font-medium text-zinc-500 dark:text-zinc-400 bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-md border border-black/5 dark:border-white/10">
                           {sectionBookmarks.length}
                         </span>
                       </h2>
                       {isEditMode && section !== 'General' && (
                         <button 
                           onClick={() => handleDeleteSection(section, activeSection, setActiveSection)}
-                          className="text-[10px] font-mono-ui text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2 py-1 rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500"
+                          className="text-[10px] font-mono-ui text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2.5 py-1 rounded-md border border-red-500/20 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500"
                         >
                           DELETE SECTION
                         </button>
@@ -295,6 +295,32 @@ export default function App() {
         </DndContext>
       </main>
 
+      {/* Understated Human-Crafted Footer */}
+      <footer className="w-full max-w-7xl mt-16 pt-6 pb-4 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono-ui text-zinc-500 dark:text-zinc-400 select-none">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-zinc-600 dark:text-zinc-300">Bookshelf</span>
+          <span className="opacity-40">•</span>
+          <span>Local-first &amp; offline storage</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => setIsPrivacyModalOpen(true)}
+            className="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors cursor-pointer underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c85a32] rounded px-1"
+          >
+            Privacy Policy
+          </button>
+          <span className="opacity-40">•</span>
+          <button
+            type="button"
+            onClick={() => setIsTermsModalOpen(true)}
+            className="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors cursor-pointer underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c85a32] rounded px-1"
+          >
+            Terms of Service
+          </button>
+        </div>
+      </footer>
+
       {/* Modals */}
       <AddBookmarkModal
         isOpen={isAddModalOpen}
@@ -321,6 +347,16 @@ export default function App() {
         setBgBlur={setBgBlur}
         themePreset={themePreset}
         setThemePreset={setThemePreset}
+      />
+
+      <PrivacyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
+      />
+
+      <TermsModal
+        isOpen={isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
       />
 
       {/* Noise background texture overlay */}

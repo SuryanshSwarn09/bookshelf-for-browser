@@ -40,6 +40,17 @@ export function getFaviconFallbackUrls(url: string, forceRefresh: boolean = fals
   }
 }
 
+const NON_PURPLE_PALETTES = [
+  { bg: 'linear-gradient(135deg, #c85a32 0%, #9e3d1b 100%)', text: '#ffffff' }, // Terracotta
+  { bg: 'linear-gradient(135deg, #2d5a43 0%, #1a3828 100%)', text: '#ffffff' }, // Forest slate
+  { bg: 'linear-gradient(135deg, #1e3a5f 0%, #0f233d 100%)', text: '#ffffff' }, // Deep navy
+  { bg: 'linear-gradient(135deg, #b46b1a 0%, #874b0c 100%)', text: '#ffffff' }, // Warm bronze
+  { bg: 'linear-gradient(135deg, #374151 0%, #1f2937 100%)', text: '#ffffff' }, // Charcoal graphite
+  { bg: 'linear-gradient(135deg, #52634f 0%, #354233 100%)', text: '#ffffff' }, // Olive sage
+  { bg: 'linear-gradient(135deg, #99622c 0%, #6e4219 100%)', text: '#ffffff' }, // Warm ochre
+  { bg: 'linear-gradient(135deg, #8f2d2d 0%, #611818 100%)', text: '#ffffff' }, // Auburn
+];
+
 export function getDeterministicGradient(seedStr: string): { bg: string; text: string } {
   const str = (seedStr || 'Unnamed').toLowerCase().trim();
   let hash = 0;
@@ -47,13 +58,8 @@ export function getDeterministicGradient(seedStr: string): { bg: string; text: s
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   
-  const hue1 = Math.abs(hash) % 360;
-  const hue2 = (hue1 + 45) % 360;
-  
-  return {
-    bg: `linear-gradient(135deg, hsl(${hue1}, 70%, 45%) 0%, hsl(${hue2}, 80%, 35%) 100%)`,
-    text: '#ffffff',
-  };
+  const index = Math.abs(hash) % NON_PURPLE_PALETTES.length;
+  return NON_PURPLE_PALETTES[index];
 }
 
 export function formatCleanTitle(userTitle: string, rawUrl: string): string {

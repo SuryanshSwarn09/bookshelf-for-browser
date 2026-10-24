@@ -54,9 +54,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-[#121314] text-[#e5e5e1] p-6 text-center select-none font-sans">
-          <div className="max-w-md w-full ios-glass-card p-8 rounded-3xl backdrop-blur-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-1">
-              <AlertTriangle size={32} />
+          <div className="max-w-md w-full ios-glass-card p-8 rounded-2xl backdrop-blur-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-4">
+            <div className="w-14 h-14 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-1">
+              <AlertTriangle size={28} />
             </div>
 
             <h2 className="text-2xl font-semibold tracking-tight">Something went wrong</h2>
@@ -65,7 +65,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
             </p>
 
             {this.state.error?.message && (
-              <div className="w-full bg-black/40 border border-white/5 rounded-xl p-3 text-xs font-mono text-stone-400 text-left overflow-auto max-h-24">
+              <div className="w-full bg-black/40 border border-white/5 rounded-lg p-3 text-xs font-mono text-stone-400 text-left overflow-auto max-h-24">
                 {this.state.error.message}
               </div>
             )}
@@ -73,17 +73,17 @@ export class ErrorBoundary extends React.Component<Props, State> {
             <div className="flex items-center gap-3 w-full mt-2">
               <button
                 onClick={this.handleReload}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 active:scale-95 text-white text-sm font-medium rounded-2xl transition-all cursor-pointer border border-white/10"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 active:scale-95 text-white text-sm font-medium rounded-lg transition-all cursor-pointer border border-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
               >
-                <RefreshCw size={16} />
+                <RefreshCw size={15} />
                 Reload Page
               </button>
 
               <button
                 onClick={this.handleReset}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600/80 hover:bg-red-600 active:scale-95 text-white text-sm font-medium rounded-2xl transition-all cursor-pointer border border-red-500/30"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600/80 hover:bg-red-600 active:scale-95 text-white text-sm font-medium rounded-lg transition-all cursor-pointer border border-red-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
               >
-                <RotateCcw size={16} />
+                <RotateCcw size={15} />
                 Reset Data
               </button>
             </div>
