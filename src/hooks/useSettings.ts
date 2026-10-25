@@ -62,13 +62,42 @@ export function useSettings() {
     };
   }, []);
 
-  // Update body class attribute when theme changes
+  // Update body class and document dark-mode state when theme changes
   useEffect(() => {
-    if (themePreset === 'default') {
-      document.body.className = '';
-    } else {
-      document.body.className = `theme-${themePreset}`;
+    const root = document.documentElement;
+
+    if (themePreset === 'porcelain') {
+      document.body.className = 'theme-porcelain';
+      root.classList.remove('dark');
+      root.style.colorScheme = 'light';
+      return;
     }
+
+    if (['oled', 'nordic', 'sunset', 'graphite'].includes(themePreset)) {
+      document.body.className = `theme-${themePreset}`;
+      root.classList.add('dark');
+      root.style.colorScheme = 'dark';
+      return;
+    }
+
+    // Default theme follows system preferences dynamically
+    document.body.className = '';
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const syncSystemTheme = () => {
+      if (mediaQuery.matches) {
+        root.classList.add('dark');
+        root.style.colorScheme = 'dark';
+      } else {
+        root.classList.remove('dark');
+        root.style.colorScheme = 'light';
+      }
+    };
+
+    syncSystemTheme();
+    mediaQuery.addEventListener('change', syncSystemTheme);
+    return () => {
+      mediaQuery.removeEventListener('change', syncSystemTheme);
+    };
   }, [themePreset]);
 
   useEffect(() => {
