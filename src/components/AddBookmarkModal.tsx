@@ -119,7 +119,13 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
                 <img
                   src={previewFaviconUrl}
                   alt="Favicon preview"
-                  className="w-5 h-5 object-contain transition-all"
+                  className="w-5 h-5 object-contain transition-all dark:[filter:drop-shadow(0_0_1.5px_rgba(255,255,255,0.7))]"
+                  onLoad={(e) => {
+                    const img = e.currentTarget;
+                    if (previewFaviconUrl.includes('google.com/s2/favicons') && img.naturalWidth <= 16 && img.naturalHeight <= 16) {
+                      setPreviewError(true);
+                    }
+                  }}
                   onError={() => setPreviewError(true)}
                 />
               ) : (

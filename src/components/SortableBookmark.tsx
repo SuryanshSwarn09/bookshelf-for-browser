@@ -163,15 +163,26 @@ function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconS
     }
   };
 
+  const handleImgLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    // Reject Google S2 generic 16x16 px default placeholder globe
+    const isGoogleS2 = Boolean(activeSrc && activeSrc.includes('google.com/s2/favicons'));
+    if (isGoogleS2 && img.naturalWidth <= 16 && img.naturalHeight <= 16) {
+      handleImgError();
+      return;
+    }
+  };
+
   return (
     <>
-      <div className={`relative ${currentSize.container} ios-glass-card overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-active:scale-95 ${isDragging ? 'shadow-2xl border-[#2563eb]/60 dark:border-[#3b82f6]/60 scale-110' : ''}`}>
+      <div className={`relative ${currentSize.container} ios-glass-card dark:bg-white/[0.03] overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-active:scale-95 ${isDragging ? 'shadow-2xl border-[#2563eb]/60 dark:border-[#3b82f6]/60 scale-110' : ''}`}>
         {!allImagesFailed ? (
           <img 
             src={activeSrc} 
             alt={bookmark.title || 'Bookmark'}
-            className={`${currentSize.icon} object-contain transition-transform duration-300 group-hover:scale-105 ${isEditMode ? 'pointer-events-none' : ''}`}
+            className={`${currentSize.icon} object-contain transition-transform duration-300 group-hover:scale-105 dark:[filter:drop-shadow(0_0_1.5px_rgba(255,255,255,0.7))] ${isEditMode ? 'pointer-events-none' : ''}`}
             draggable={false}
+            onLoad={handleImgLoad}
             onError={handleImgError}
           />
         ) : (
