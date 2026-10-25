@@ -8,4 +8,5 @@ coverage/
 !.env.example
 __pycache__/
 *.py[cod]
+*.zip
 
