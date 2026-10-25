@@ -12,6 +12,7 @@ interface SortableBookmarkProps {
   onDelete: (e: React.MouseEvent, id: string) => void;
   onRefreshFavicon: (e: React.MouseEvent, id: string) => void;
   onImageError: (id: string, isError: boolean) => void;
+  onResolveIcon?: (id: string, resolvedUrl: string) => void;
   iconSize: 'sm' | 'md' | 'lg';
 }
 
@@ -48,7 +49,7 @@ const sizeMap = {
   }
 };
 
-export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavicon, onImageError, iconSize }: SortableBookmarkProps) {
+export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavicon, onImageError, onResolveIcon, iconSize }: SortableBookmarkProps) {
   const {
     attributes,
     listeners,
@@ -84,7 +85,7 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
         className={`w-full flex flex-col items-center justify-start ${currentSize.gap}`}
         draggable={false}
       >
-        <BookmarkContent bookmark={bookmark} isEditMode={isEditMode} isDragging={isDragging} onImageError={onImageError} iconSize={iconSize} />
+        <BookmarkContent bookmark={bookmark} isEditMode={isEditMode} isDragging={isDragging} onImageError={onImageError} onResolveIcon={onResolveIcon} iconSize={iconSize} />
       </a>
 
       {/* Edit Mode iOS Corner Badges */}
@@ -112,7 +113,7 @@ export function SortableBookmark({ bookmark, isEditMode, onDelete, onRefreshFavi
   );
 }
 
-function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconSize }: { bookmark: Bookmark, isEditMode: boolean, isDragging: boolean, onImageError: (id: string, isError: boolean) => void, iconSize: 'sm' | 'md' | 'lg' }) {
+function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, onResolveIcon, iconSize }: { bookmark: Bookmark, isEditMode: boolean, isDragging: boolean, onImageError: (id: string, isError: boolean) => void, onResolveIcon?: (id: string, resolvedUrl: string) => void, iconSize: 'sm' | 'md' | 'lg' }) {
   const currentSize = sizeMap[iconSize] || sizeMap.md;
 
   // Build candidate fallback image URLs array
@@ -170,6 +171,10 @@ function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconS
     if (isGoogleS2 && img.naturalWidth <= 16 && img.naturalHeight <= 16) {
       handleImgError();
       return;
+    }
+    // Successfully loaded high-res icon! Cache to storage if distinct from current iconUrl
+    if (onResolveIcon && activeSrc && bookmark.iconUrl !== activeSrc && !bookmark.customIconUrl) {
+      onResolveIcon(bookmark.id, activeSrc);
     }
   };
 

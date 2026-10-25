@@ -64,6 +64,7 @@ export default function App() {
     handleDeleteBookmark,
     handleDeleteSection,
     handleRefreshFavicon,
+    handleUpdateBookmarkIcon,
     handleDragEnd,
     handleExportBackup,
     handleImportBackup,
@@ -260,6 +261,7 @@ export default function App() {
                             onDelete={handleDeleteBookmark}
                             onRefreshFavicon={handleRefreshFavicon}
                             onImageError={handleImageError}
+                            onResolveIcon={handleUpdateBookmarkIcon}
                             iconSize={iconSize}
                           />
                         ))}

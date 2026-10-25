@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { Bookmark } from '../types';
-import { extractDomain, getFaviconUrl, sanitizeUrl, generateId, validateBackup, storageAdapter, formatCleanTitle } from '../utils';
+import { extractDomain, getFaviconUrl, getFaviconFallbackUrls, sanitizeUrl, generateId, validateBackup, storageAdapter, formatCleanTitle } from '../utils';
 
 export const DEFAULT_BOOKMARKS: Bookmark[] = [
   {
@@ -96,18 +96,28 @@ export function useBookmarks() {
 
     const safeUrl = sanitizeUrl(url);
     const bookmarkTitle = formatCleanTitle(title, safeUrl);
+    const candidates = getFaviconFallbackUrls(safeUrl);
+    const initialIcon = customIconUrl?.trim() || candidates[0] || getFaviconUrl(safeUrl);
     
     const newBookmark: Bookmark = {
       id: generateId(),
       url: safeUrl,
       title: bookmarkTitle,
-      iconUrl: getFaviconUrl(safeUrl),
+      iconUrl: initialIcon,
       customIconUrl: customIconUrl?.trim() || undefined,
       createdAt: Date.now(),
       category: category.trim() || 'General',
     };
 
     setBookmarks(prev => [...prev, newBookmark]);
+  }, []);
+
+  const handleUpdateBookmarkIcon = useCallback((id: string, newIconUrl: string) => {
+    setBookmarks(prev => {
+      const target = prev.find(b => b.id === id);
+      if (!target || target.iconUrl === newIconUrl) return prev;
+      return prev.map(b => (b.id === id ? { ...b, iconUrl: newIconUrl } : b));
+    });
   }, []);
 
   const handleAddSection = useCallback((sectionName: string) => {
@@ -213,6 +223,7 @@ export function useBookmarks() {
     handleDeleteBookmark,
     handleDeleteSection,
     handleRefreshFavicon,
+    handleUpdateBookmarkIcon,
     handleDragEnd,
     handleExportBackup,
     handleImportBackup,
