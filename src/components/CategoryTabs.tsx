@@ -16,12 +16,12 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
 }) => {
   return (
     <nav 
-      className="w-full flex flex-wrap gap-1.5 p-1.5 rounded-xl ios-glass-pill select-none shadow-sm"
+      className="w-full flex flex-wrap gap-1 p-1 rounded-xl ios-glass-pill select-none shadow-sm"
       aria-label="Bookmark Categories Navigation"
     >
       <button
         onClick={() => setActiveSection('All')}
-        className={`px-3.5 py-1.5 rounded-lg text-xs font-sans-ui transition-all duration-200 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] ${
+        className={`px-3 py-1 rounded-lg text-xs font-sans-ui transition-all duration-200 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] ${
           activeSection === 'All'
             ? 'bg-[#2563eb] text-white font-medium shadow-sm'
             : 'text-slate-700 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/10'
@@ -37,7 +37,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           <button
             key={section}
             onClick={() => setActiveSection(section)}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-sans-ui transition-all duration-200 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-sans-ui transition-all duration-200 cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] ${
               isActive
                 ? 'bg-[#2563eb] text-white font-medium shadow-sm'
                 : 'text-slate-700 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/10'

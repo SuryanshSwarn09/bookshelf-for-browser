@@ -25,9 +25,9 @@ import { PrivacyModal } from './components/PrivacyModal';
 import { TermsModal } from './components/TermsModal';
 
 const gridClasses = {
-  sm: 'grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 gap-y-6 gap-x-3',
-  md: 'grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-y-8 gap-x-4',
-  lg: 'grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-y-10 gap-x-5',
+  sm: 'grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 gap-y-3.5 gap-x-2.5',
+  md: 'grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-y-4.5 gap-x-3',
+  lg: 'grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-y-6 gap-x-4',
 };
 
 const addBtnSizeMap = {
@@ -35,19 +35,19 @@ const addBtnSizeMap = {
     container: 'w-12 h-12 sm:w-14 sm:h-14 rounded-xl',
     iconSize: 18,
     text: 'text-[10px] sm:text-xs font-sans-ui',
-    gap: 'gap-1.5 sm:gap-2',
+    gap: 'gap-1 sm:gap-1.5',
   },
   md: {
     container: 'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl',
     iconSize: 26,
     text: 'text-xs sm:text-sm font-sans-ui',
-    gap: 'gap-2 sm:gap-2.5',
+    gap: 'gap-1.5 sm:gap-2',
   },
   lg: {
     container: 'w-20 h-20 sm:w-24 sm:h-24 rounded-3xl',
     iconSize: 34,
     text: 'text-sm sm:text-base font-sans-ui',
-    gap: 'gap-3 sm:gap-3.5',
+    gap: 'gap-2 sm:gap-2.5',
   }
 };
 
@@ -229,12 +229,11 @@ export default function App() {
 
               return (
                 <React.Fragment key={section}>
-                  {activeSection === 'All' && index > 0 && <hr className="w-full border-t border-slate-200 dark:border-slate-800" />}
-                  <section className="relative" aria-labelledby={`section-heading-${section}`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 id={`section-heading-${section}`} className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
+                  <section className={`relative ${activeSection === 'All' && index > 0 ? 'pt-4 border-t border-slate-200/80 dark:border-slate-800/80' : ''}`} aria-labelledby={`section-heading-${section}`}>
+                    <div className="flex items-center justify-between mb-2.5">
+                      <h2 id={`section-heading-${section}`} className="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
                         {section}
-                        <span className="text-[11px] font-mono-ui font-medium text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-md border border-black/5 dark:border-white/10">
+                        <span className="text-[10px] font-mono-ui font-medium text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded border border-black/5 dark:border-white/10">
                           {sectionBookmarks.length}
                         </span>
                       </h2>
