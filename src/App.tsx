@@ -149,7 +149,7 @@ export default function App() {
   if (!isBookmarksReady || !isSettingsReady) return null;
 
   return (
-    <div className="min-h-screen p-6 sm:p-10 md:p-14 transition-colors duration-300 flex flex-col items-center w-full">
+    <div className="min-h-screen px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-7 transition-colors duration-300 flex flex-col items-center w-full">
 
       {/* Background Wallpaper Backdrop */}
       {bgWallpaper && (
@@ -181,7 +181,7 @@ export default function App() {
       />
 
       {/* Main Content */}
-      <main className="w-full max-w-7xl flex flex-col gap-6 sm:gap-8 animate-fade-in-up [animation-delay:100ms]">
+      <main className="w-full max-w-7xl flex flex-col gap-4 sm:gap-5 animate-fade-in-up [animation-delay:100ms]">
         {/* Category Tabs iOS Glass Segmented Control */}
         <CategoryTabs
           sections={sections}
@@ -296,7 +296,7 @@ export default function App() {
       </main>
 
       {/* Understated Clean Footer */}
-      <footer className="w-full max-w-7xl mt-16 pt-6 pb-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-sans-ui text-slate-500 dark:text-slate-400 select-none">
+      <footer className="w-full max-w-7xl mt-8 sm:mt-10 pt-4 pb-3 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs font-sans-ui text-slate-500 dark:text-slate-400 select-none">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-slate-700 dark:text-slate-200">Bookshelf</span>
           <span className="text-slate-300 dark:text-slate-700 font-mono">v1.0.0</span>
