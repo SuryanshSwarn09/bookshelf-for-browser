@@ -87,39 +87,39 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Bar */}
-        <div className="px-6 py-5 flex items-center justify-between border-b border-black/5 dark:border-white/10">
+        <div className="px-5 py-3.5 flex items-center justify-between border-b border-black/5 dark:border-white/10">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#2563eb]/10 dark:bg-[#3b82f6]/20 flex items-center justify-center text-[#2563eb] dark:text-[#3b82f6]">
-              <Folder size={16} />
+            <div className="w-7 h-7 rounded-lg bg-[#2563eb]/10 dark:bg-[#3b82f6]/20 flex items-center justify-center text-[#2563eb] dark:text-[#3b82f6]">
+              <Folder size={15} />
             </div>
             <div>
-              <h2 id="add-bookmark-title" className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+              <h2 id="add-bookmark-title" className="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                 Add bookmark
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Saving to <span className="font-medium text-[#2563eb] dark:text-[#3b82f6]">{category}</span>
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]"
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]"
             aria-label="Close modal"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
 
         {/* Live Squircle Glass Preview Banner */}
-        <div className="mx-6 mt-5 p-3.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 min-w-0">
+        <div className="mx-5 mt-3.5 p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex items-center justify-between gap-3.5">
+          <div className="flex items-center gap-3 min-w-0">
             {/* The Squircle Icon Preview */}
-            <div className="relative w-12 h-12 shrink-0 rounded-xl ios-glass-card overflow-hidden flex items-center justify-center shadow-sm">
+            <div className="relative w-10 h-10 shrink-0 rounded-xl ios-squircle overflow-hidden flex items-center justify-center shadow-sm">
               {previewFaviconUrl && !previewError ? (
                 <img
                   src={previewFaviconUrl}
                   alt="Favicon preview"
-                  className="w-7 h-7 object-contain transition-all"
+                  className="w-5 h-5 object-contain transition-all"
                   onError={() => setPreviewError(true)}
                 />
               ) : (
@@ -127,7 +127,7 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
                   className="w-full h-full flex items-center justify-center select-none shadow-inner"
                   style={{ background: gradientAvatar.bg, color: gradientAvatar.text }}
                 >
-                  <span className="font-sans-ui text-lg font-bold">
+                  <span className="font-sans-ui text-base font-bold">
                     {firstLetter}
                   </span>
                 </div>
@@ -160,14 +160,14 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 pt-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 pt-3 space-y-3">
           {/* Website URL Input */}
           <div>
-            <label className="block text-xs font-sans-ui text-slate-700 dark:text-slate-300 mb-1.5 font-medium">
+            <label className="block text-xs font-sans-ui text-slate-700 dark:text-slate-300 mb-1 font-medium">
               Website URL <span className="text-[#2563eb]">*</span>
             </label>
             <div className="relative flex items-center">
-              <Globe size={15} className="absolute left-3.5 text-slate-400 pointer-events-none" />
+              <Globe size={14} className="absolute left-3 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 required
@@ -175,13 +175,13 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
                 placeholder="github.com, figma.com, news.ycombinator.com"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full pl-10 pr-9 py-2.5 rounded-lg ios-glass-input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans-ui text-xs outline-none"
+                className="w-full pl-9 pr-8 py-2 rounded-lg ios-glass-input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans-ui text-xs outline-none"
               />
               {url && (
                 <button
                   type="button"
                   onClick={() => setUrl('')}
-                  className="absolute right-3 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer rounded"
+                  className="absolute right-2.5 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer rounded"
                   title="Clear URL"
                 >
                   <X size={13} />
@@ -192,7 +192,7 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
 
           {/* Title Input */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center justify-between mb-1">
               <label className="text-xs font-sans-ui text-slate-700 dark:text-slate-300 font-medium">
                 Bookmark title <span className="text-slate-400 font-normal">(optional)</span>
               </label>
@@ -207,37 +207,37 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
               )}
             </div>
             <div className="relative flex items-center">
-              <Type size={15} className="absolute left-3.5 text-slate-400 pointer-events-none" />
+              <Type size={14} className="absolute left-3 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Leave blank to use clean domain"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg ios-glass-input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans-ui text-xs outline-none"
+                className="w-full pl-9 pr-3 py-2 rounded-lg ios-glass-input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans-ui text-xs outline-none"
               />
             </div>
           </div>
 
           {/* Custom Icon URL Input */}
           <div>
-            <label className="block text-xs font-sans-ui text-slate-700 dark:text-slate-300 mb-1.5 font-medium">
+            <label className="block text-xs font-sans-ui text-slate-700 dark:text-slate-300 mb-1 font-medium">
               Custom icon URL <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <div className="relative flex items-center">
-              <ImageIcon size={15} className="absolute left-3.5 text-slate-400 pointer-events-none" />
+              <ImageIcon size={14} className="absolute left-3 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="https://example.com/icon.svg"
                 value={customIconUrl}
                 onChange={(e) => setCustomIconUrl(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg ios-glass-input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans-ui text-xs outline-none"
+                className="w-full pl-9 pr-3 py-2 rounded-lg ios-glass-input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans-ui text-xs outline-none"
               />
             </div>
           </div>
 
           {/* Category Quick Chips Selector */}
           <div>
-            <label className="block text-xs font-sans-ui text-slate-700 dark:text-slate-300 mb-1.5 font-medium">
+            <label className="block text-xs font-sans-ui text-slate-700 dark:text-slate-300 mb-1 font-medium">
               Section
             </label>
             <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 max-h-24 overflow-y-auto">
@@ -248,7 +248,7 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
                     key={s}
                     type="button"
                     onClick={() => setCategory(s)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-sans-ui transition-all duration-200 cursor-pointer flex items-center gap-1.5 active:scale-95 ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-sans-ui transition-all duration-200 cursor-pointer flex items-center gap-1.5 active:scale-95 ${
                       isSelected
                         ? 'bg-[#2563eb] dark:bg-[#3b82f6] text-white font-medium shadow-sm'
                         : 'text-slate-600 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/10'
@@ -263,18 +263,18 @@ export const AddBookmarkModal: React.FC<AddBookmarkModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-2 flex items-center gap-3">
+          <div className="pt-1.5 flex items-center gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-lg ios-glass-pill text-xs font-sans-ui font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 text-center"
+              className="flex-1 py-2 px-3 rounded-lg ios-glass-pill text-xs font-sans-ui font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:white transition-all cursor-pointer active:scale-95 text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!url.trim()}
-              className="flex-[2] py-2.5 px-4 bg-[#2563eb] hover:bg-[#1d4ed8] dark:bg-[#3b82f6] dark:hover:bg-[#2563eb] text-white rounded-lg font-sans-ui text-xs font-medium shadow-sm active:scale-98 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#2563eb]"
+              className="flex-[2] py-2 px-3 bg-[#2563eb] hover:bg-[#1d4ed8] dark:bg-[#3b82f6] dark:hover:bg-[#2563eb] text-white rounded-lg font-sans-ui text-xs font-medium shadow-sm active:scale-98 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#2563eb]"
             >
               Save bookmark
             </button>
