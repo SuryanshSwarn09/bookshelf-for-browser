@@ -1,151 +1,94 @@
-## Features & Version History
+# Bookshelf
 
-### Core Functionality
+A focused, distraction-free browser start page and bookmark dashboard built with React 19, TypeScript, and Vite. Designed to run both as a responsive web application and as a Chromium Manifest V3 browser extension overriding the new tab experience.
 
-* **Custom Categories:** Group shortcuts into custom workflow sections (e.g., Work, Entertainment, Tech).
-* **Always-On Drag & Drop:** Reorder bookmarks or move them across sections anytime using `@dnd-kit`.
-* **Adjustable Layouts:** Toggle icon grid density between Small (S), Medium (M), and Large (L).
-* **Smart Favicons:** Auto-fetch high-resolution site icons via Google Favicon API with manual refresh support.
-* **Backup & Sync:** Import/export data via JSON files.
-* **Custom Wallpapers & Themes:** Supports system light/dark themes and custom background image URLs with opacity/blur controls.
+> **Full Documentation:** For deep-dive architectural specifications, component breakdown, and complete engineering changelog, visit the [Bookshelf Documentation Guide](docs/DOCUMENTATION.md).
 
-### Recent UI & UX Enhancements
+---
 
-* **Tactile Glassmorphism:** Implemented continuous squircle tiles (`rounded-[22.5%]`), clean monochromatic noise texture backdrop, and crisp geometric docks (`rounded-xl` / `rounded-lg`) for controls and section navigation.
-* **Jiggle Edit Mode:** Prominent Edit/Done toggle activates tile jiggling with direct action badges for deletion (top-right) and favicon refresh (top-left).
-* **Navigation & Typography:** Bookmarks default to opening in new tabs (`target="_blank"`). Global typography updated to Google Fonts Poppins with crisp mono status labels.
-* **Modal Accessibility & Legal Dialogs:** Redesigned popup modals with theme-matched container backgrounds, high-contrast input fields, keyboard `Esc` key dismissal, backdrop click closing, and added authentic Privacy Policy and Terms of Service dialogs.
-* **Dock Streamlining:** Removed the Pomodoro clock widget for a minimal layout.
+## Key Features
 
-## Setup & Deployment
+- **Tactile Squircle Geometry:** Bookmarks formatted with continuous squircle curves (`rounded-[22.5%]`) and subtle monochromatic glassmorphism.
+- **Multi-Tier Favicon Resolution:** 3-stage fallback pipeline (Google S2 128px, DuckDuckGo, direct origin `/favicon.ico`, and letter monogram avatars).
+- **16px Generic Globe Rejection:** Automatically detects and rejects Google's generic 16px gray globe placeholders, cascading directly to alternative high-res providers.
+- **Adaptive Dark-Mode Silhouette Filter:** Renders a subtle white luminance halo (`drop-shadow`) for dark transparent monochrome icons (GitHub, Notion, X, Vercel) against dark glass surfaces.
+- **Persistent Icon Auto-Caching:** High-resolution icons resolved via fallbacks are automatically cached back to persistent storage.
+- **Curated Theme Engine:** 6 bespoke themes (Default Glass, OLED Pitch Black, Nordic Slate, Sunset Rose, Graphite Carbon, and Porcelain Warm White) with synchronized `.dark` state for accurate contrast.
+- **Always-On Drag & Drop:** Multi-sensor spatial reordering via `@dnd-kit` with touch and pointer activation thresholds.
+- **Instant Search:** Fuzzy search across all titles and URLs via `Cmd+K` / `Ctrl+K` shortcut with `Esc` clear.
+- **Direct GitHub Navigation:** Instant access to the project repository directly from the top floating dock.
+- **Local-First & Zod-Validated:** Universal storage abstraction supporting `chrome.storage.sync`, `chrome.storage.local`, and `localStorage` with runtime JSON backup schema verification.
+- **Anti-Vibe Design Philosophy:** Strict absence of purple neon gradients, pill buttons, fake reviews, vanity metrics, emoji icons, or AI marketing labels.
+
+---
+
+## Recent Engineering Improvements
+
+1. **Anti-Vibe Codebase Overhaul:** Removed neon gradients and pill shapes; introduced clean typography, tactile squircle radiuses, and authentic Privacy Policy / Terms dialogs.
+2. **Whitespace & Density Compaction:** Streamlined viewport padding, header scale, bookmark grid spacing, and modal dialog forms across 3 atomic commits.
+3. **Resilient Favicon Pipeline:** Deployed multi-tier icon resolution, 16px globe rejection, dark silhouette halo filters, and persistent auto-caching across 3 atomic commits.
+4. **Porcelain Theme Contrast Rectification:** Resolved Tailwind CSS v4 `@media (prefers-color-scheme: dark)` conflict by binding `@custom-variant dark` to a synchronized `.dark` class, ensuring legible typography on off-white backdrops.
+5. **Floating Dock GitHub Navigation:** Embedded an official SVG GitHub mark button into the header dock with focus-visible accessibility outlines.
+
+*Detailed historical notes are available in [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md#5-engineering-improvements--changelog).*
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework & Language** | React 19, TypeScript 5.8 | Modern component architecture and strict compile-time safety |
+| **Bundler & Build Tool** | Vite 6, Esbuild | Fast Hot Module Replacement and production bundling |
+| **Styling & Layout** | TailwindCSS v4, Vanilla CSS | Squircle geometry, custom dark-mode variants, glassmorphism |
+| **Drag & Drop** | `@dnd-kit/core`, `@dnd-kit/sortable` | Accessible pointer and keyboard sensor reordering |
+| **Validation** | Zod 3 | Runtime validation for imported backup JSON structures |
+| **Testing** | Vitest 4, JSDOM, `@testing-library/react` | Single-fork isolate unit and integration test suite |
+| **Extension Standard** | Chrome Manifest V3 | `chrome_url_overrides.newtab` for browser extension deployment |
+
+---
+
+## Getting Started
 
 ### Local Development
 
 ```bash
-npm install     # Install dependencies
-npm run dev     # Start development server at http://localhost:3000
-npm run lint    # Run code verification
+# Install dependencies
+npm install
 
+# Start development server at http://localhost:3000
+npm run dev
+
+# Run TypeScript typecheck
+npm run lint
+
+# Run automated tests
+npm run test
 ```
 
-### Vercel Deployment
+### Production Build
 
 ```bash
-npm install -g vercel   # Install Vercel CLI
-vercel                  # Initial deployment setup
-vercel --prod           # Deploy directly to production
-
+npm run build
 ```
 
-## Technical Architecture & Overview
+This compiles optimized assets to `dist/`, including `manifest.json` for Chrome Manifest V3.
 
-**Bookshelf** is an iOS-inspired, glassmorphic new tab dashboard and bookmark management engine built with React 19, TypeScript, and Vite. Designed to run both as a ultra-fast Web Application and as a Manifest V3 Browser Extension (Chrome, Edge, Firefox, Brave), Bookshelf provides drag-and-drop shortcut organization, custom category workflows, instant fuzzy search, and universal storage persistence.
+### Installing as a Chrome Extension
 
----
-
-## 1. Tech Stack Overview
-
-| Layer | Technologies Used | Key Purpose |
-| :--- | :--- | :--- |
-| **Framework & Runtime** | React 19, TypeScript 5.8 | Modern component architecture & strict compile-time type safety |
-| **Build & Bundler** | Vite 6, Esbuild | Instant HMR dev server and optimized production assets bundler |
-| **Styling & Aesthetics** | TailwindCSS v4, Vanilla CSS | Continuous squircle geometry, tactile glassmorphism, subtle noise textures |
-| **Drag & Drop** | `@dnd-kit/core`, `@dnd-kit/sortable` | Accessibility-compliant, multi-sensor grid reordering |
-| **Validation & Schema** | Zod 3 | Runtime validation for imported backup JSON structures |
-| **Icons & Typography** | Lucide React, Google Fonts | Poppins font & vector micro-iconography |
-| **Testing** | Vitest 4, JSDOM, `@testing-library/react` | Single-fork isolate unit and integration testing runner |
-| **Extension Standard** | Chrome Manifest V3 | `chrome_url_overrides` for instant New Tab takeover |
+1. Run `npm run build`.
+2. Open Chrome and navigate to `chrome://extensions/`.
+3. Enable **Developer mode** in the upper right corner.
+4. Click **Load unpacked** and select the generated `dist/` directory.
+5. Open a new tab to experience Bookshelf.
 
 ---
 
-## 2. System Architecture & Modular Design
+## Documentation
 
-Bookshelf uses a decoupled state-and-presentational pattern to keep UI rendering lightweight while centralizing data mutations:
-
-```
-                          ┌──────────────────────────┐
-                          │   Browser / New Tab Page │
-                          └────────────┬─────────────┘
-                                       │
-                        ┌──────────────▼──────────────┐
-                        │      App Composition        │
-                        │        (src/App.tsx)        │
-                        └──────┬──────────────┬───────┘
-                               │              │
-        ┌──────────────────────▼──┐        ┌──▼──────────────────────┐
-        │     useBookmarks Hook   │        │     useSettings Hook    │
-        │ - Bookmarks / Sections  │        │ - Layout (Grid Size)    │
-        │ - Drag-and-Drop Handler │        │ - Wallpaper, Opacity    │
-        │ - Backup Import/Export  │        │ - Active Category Tab   │
-        └──────────────┬──────────┘        └──────────┬──────────────┘
-                       │                              │
-                       └──────────────┬───────────────┘
-                                      │
-                       ┌──────────────▼──────────────┐
-                       │   Universal Storage Adapter │
-                       │    (chrome.storage / LS)    │
-                       └─────────────────────────────┘
-```
-
-### Core Modules:
-
-1. **Custom Hooks Layer ([`src/hooks/`](file:///e:/bookshelf-for-browser/src/hooks)):**
-   * [`useBookmarks`](file:///e:/bookshelf-for-browser/src/hooks/useBookmarks.ts): Encapsulates bookmark creation, section filtering, broken favicon detection/repair, drag-and-drop reordering via `@dnd-kit`, and JSON backup validation.
-   * [`useSettings`](file:///e:/bookshelf-for-browser/src/hooks/useSettings.ts): Manages layout preferences (grid density `sm`/`md`/`lg`), wallpaper backdrop filters (opacity/blur), search query state, and edit mode.
-
-2. **Presentational Components ([`src/components/`](file:///e:/bookshelf-for-browser/src/components)):**
-   * [`Header`](file:///e:/bookshelf-for-browser/src/components/Header.tsx): Top glass dock containing workspace title, search input (`Cmd+K`), import/export triggers, icon size control, new section modal trigger, and edit mode toggle.
-   * [`CategoryTabs`](file:///e:/bookshelf-for-browser/src/components/CategoryTabs.tsx): Segmented tab control with live bookmark counter badges per category.
-   * [`SortableBookmark`](file:///e:/bookshelf-for-browser/src/components/SortableBookmark.tsx): Individual shortcut tile wrapped in `@dnd-kit`'s `useSortable` hook. Supports iOS-style tile jiggle in Edit Mode.
-   * [`AddBookmarkModal`](file:///e:/bookshelf-for-browser/src/components/AddBookmarkModal.tsx), [`SectionModal`](file:///e:/bookshelf-for-browser/src/components/SectionModal.tsx), [`WallpaperModal`](file:///e:/bookshelf-for-browser/src/components/WallpaperModal.tsx): Accessible modal dialogs (`role="dialog"`, `aria-modal="true"`) for user operations.
+For full technical specifications, component hierarchy, storage mechanics, and contribution guidelines, refer to the [Bookshelf Documentation](docs/DOCUMENTATION.md).
 
 ---
-
-## 3. Key Technical Features
-
-### A. Universal Storage Abstraction ([`storageAdapter`](file:///e:/bookshelf-for-browser/src/utils.ts#L72-L124))
-Bookshelf seamlessly operates across both browser extensions and web deployments through an abstraction layer:
-* **Extension Mode:** Interacts asynchronously with `chrome.storage.sync` (syncing user bookmarks across Chrome profiles) or `chrome.storage.local`.
-* **Web Mode Fallback:** Automatically falls back to standard `window.localStorage` when running outside an extension runtime context.
-
-### B. Drag-and-Drop Engine
-Implemented using `@dnd-kit/core` with `PointerSensor` (configured with a 5px activation threshold to allow crisp click navigation) and `KeyboardSensor` (for full accessibility keyboard navigation).
-
-### C. Smart Favicon Fetching & Auto-Healing
-Favicons are generated dynamically via Google's high-resolution Favicon API (`https://www.google.com/s2/favicons?domain=...&sz=128`).
-* **Auto-Healing:** If an icon fails to load, `SortableBookmark` registers the broken ID. The user can repair all broken icons in 1 click using the `FIX` trigger in the header, which appends cache-busting timestamps (`&cb=TIMESTAMP`).
-
-### D. Data Integrity & Schema Validation ([`validateBackup`](file:///e:/bookshelf-for-browser/src/utils.ts#L63-L65))
-Imported JSON backups undergo strict runtime verification via **Zod** (`BackupDataSchema`). Malformed or corrupted upload files are safely caught before mutating state.
-
----
-
-## 4. Manifest V3 Extension Specification
-
-Bookshelf includes a Manifest V3 declaration in [`public/manifest.json`](file:///e:/bookshelf-for-browser/public/manifest.json):
-```json
-{
-  "manifest_version": 3,
-  "name": "Bookshelf - Glassmorphic Startpage Dashboard",
-  "version": "1.0.0",
-  "chrome_url_overrides": {
-    "newtab": "index.html"
-  },
-  "permissions": [
-    "storage"
-  ]
-}
-```
-This allows building a single output bundle (`npm run build`) that works as a hosted web app (e.g. on Vercel/Netlify) and as an offline Chrome Web Store `.zip` extension bundle.
-
----
-
-## 5. Performance & Build Profile
-
-* **Production Bundle Size:** ~98 kB gzipped JS / 8 kB gzipped CSS.
-* **Build Time:** < 17 seconds via Vite and Esbuild.
-* **Type Checking:** 100% strict mode compliance via `tsc --noEmit`.
-* **Testing:** Automated Vitest test suite executing in isolated single-fork mode.
 
 ## License
 
