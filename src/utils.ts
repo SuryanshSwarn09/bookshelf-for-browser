@@ -13,6 +13,23 @@ export function extractDomain(url: string): string {
   }
 }
 
+export function extractRootDomain(url: string): string {
+  try {
+    const domain = extractDomain(url);
+    if (!domain || domain === 'not-a-valid-url') return '';
+    const parts = domain.split('.');
+    if (parts.length <= 2) return domain;
+    const secondLast = parts[parts.length - 2].toLowerCase();
+    const isCcTld = ['co', 'com', 'org', 'net', 'edu', 'gov'].includes(secondLast) && parts[parts.length - 1].length === 2;
+    if (isCcTld && parts.length > 2) {
+      return parts.slice(-3).join('.');
+    }
+    return parts.slice(-2).join('.');
+  } catch (e) {
+    return extractDomain(url);
+  }
+}
+
 export function getFaviconUrl(url: string, forceRefresh: boolean = false): string {
   try {
     const domain = extractDomain(url);
@@ -28,13 +45,38 @@ export function getFaviconFallbackUrls(url: string, forceRefresh: boolean = fals
   try {
     const domain = extractDomain(url);
     if (!domain || domain === 'not-a-valid-url') return [];
+    const rootDomain = extractRootDomain(url);
     const cb = forceRefresh ? `?cb=${Date.now()}` : '';
-    return [
-      `https://www.google.com/s2/favicons?domain=${domain}&sz=128${cb ? '&' + cb.slice(1) : ''}`,
-      `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+    const cbAmp = forceRefresh ? `&cb=${Date.now()}` : '';
+
+    const urls: string[] = [
+      // Tier 1: Crisp Apple Touch Icons (typically 120-180px PNG standard on modern websites)
+      `https://${domain}/apple-touch-icon.png${cb}`,
+      `https://${domain}/apple-touch-icon-precomposed.png${cb}`,
+      // Tier 2: High-resolution icon services
       `https://icon.horse/icon/${domain}`,
-      `https://${domain}/favicon.ico${cb}`
+      `https://unavatar.io/${domain}?fallback=false`,
+      // Tier 3: Google S2 128px API
+      `https://www.google.com/s2/favicons?domain=${domain}&sz=128${cbAmp}`,
+      // Tier 4: DuckDuckGo favicon service
+      `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+      // Tier 5: Direct standard root favicon.ico
+      `https://${domain}/favicon.ico${cb}`,
     ];
+
+    // Tier 6: Subdomain fallback to root domain if distinct (e.g. docs.github.com -> github.com)
+    if (rootDomain && rootDomain !== domain) {
+      urls.push(
+        `https://icon.horse/icon/${rootDomain}`,
+        `https://unavatar.io/${rootDomain}?fallback=false`,
+        `https://www.google.com/s2/favicons?domain=${rootDomain}&sz=128${cbAmp}`,
+        `https://icons.duckduckgo.com/ip3/${rootDomain}.ico`,
+        `https://${rootDomain}/apple-touch-icon.png${cb}`,
+        `https://${rootDomain}/favicon.ico${cb}`
+      );
+    }
+
+    return Array.from(new Set(urls.filter(Boolean)));
   } catch (e) {
     return [];
   }

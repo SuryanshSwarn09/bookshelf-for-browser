@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   extractDomain,
+  extractRootDomain,
   ensureProtocol,
   sanitizeUrl,
   getFaviconUrl,
+  getFaviconFallbackUrls,
   generateId,
   validateBackup,
   storageAdapter,
@@ -71,6 +73,15 @@ describe('Utility Functions', () => {
     });
   });
 
+  describe('extractRootDomain', () => {
+    it('should extract root domain from subdomains', () => {
+      expect(extractRootDomain('https://docs.github.com/en')).toBe('github.com');
+      expect(extractRootDomain('news.ycombinator.com')).toBe('ycombinator.com');
+      expect(extractRootDomain('https://sub.domain.co.uk')).toBe('domain.co.uk');
+      expect(extractRootDomain('github.com')).toBe('github.com');
+    });
+  });
+
   describe('getFaviconUrl', () => {
     it('should return Google Favicon API endpoint', () => {
       const url = getFaviconUrl('https://github.com');
@@ -80,6 +91,24 @@ describe('Utility Functions', () => {
     it('should append timestamp when forceRefresh is true', () => {
       const url = getFaviconUrl('https://github.com', true);
       expect(url).toContain('&cb=');
+    });
+  });
+
+  describe('getFaviconFallbackUrls', () => {
+    it('should assemble prioritized multi-tier candidates including Apple Touch and high-res APIs', () => {
+      const urls = getFaviconFallbackUrls('https://github.com');
+      expect(urls[0]).toBe('https://github.com/apple-touch-icon.png');
+      expect(urls).toContain('https://icon.horse/icon/github.com');
+      expect(urls).toContain('https://unavatar.io/github.com?fallback=false');
+      expect(urls).toContain('https://www.google.com/s2/favicons?domain=github.com&sz=128');
+      expect(urls).toContain('https://icons.duckduckgo.com/ip3/github.com.ico');
+    });
+
+    it('should include root domain fallback when a subdomain is provided', () => {
+      const urls = getFaviconFallbackUrls('https://docs.github.com');
+      expect(urls).toContain('https://icon.horse/icon/docs.github.com');
+      expect(urls).toContain('https://icon.horse/icon/github.com');
+      expect(urls).toContain('https://www.google.com/s2/favicons?domain=github.com&sz=128');
     });
   });
 
