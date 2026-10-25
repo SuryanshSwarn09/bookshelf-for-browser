@@ -192,17 +192,17 @@ export default function App() {
 
         {/* Empty Search Results Card */}
         {searchQuery.trim() && bookmarks.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase().trim()) || b.url.toLowerCase().includes(searchQuery.toLowerCase().trim())).length === 0 && (
-          <div className="w-full ios-glass-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-3 my-4 select-none">
-            <Search size={32} className="text-zinc-400 opacity-60" />
-            <h3 className="text-lg font-serif-display italic text-[#1c1c1c] dark:text-[#e5e5e1]">No bookmarks found</h3>
-            <p className="text-xs font-mono-ui text-zinc-500 dark:text-zinc-400">
+          <div className="w-full ios-glass-card rounded-2xl p-10 flex flex-col items-center justify-center text-center gap-3 my-4 select-none">
+            <Search size={28} className="text-slate-400 opacity-60" />
+            <h3 className="text-base font-medium text-slate-900 dark:text-slate-100">No bookmarks found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               No shortcuts match "{searchQuery}"
             </p>
             <button
               onClick={() => setSearchQuery('')}
-              className="mt-1 px-4 py-1.5 rounded-lg bg-[#c85a32] text-white text-xs font-mono-ui font-semibold shadow-md active:scale-95 transition-transform cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
+              className="mt-1 px-4 py-1.5 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-sans-ui font-medium shadow-sm active:scale-95 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]"
             >
-              CLEAR SEARCH
+              Clear search
             </button>
           </div>
         )}
@@ -229,21 +229,21 @@ export default function App() {
 
               return (
                 <React.Fragment key={section}>
-                  {activeSection === 'All' && index > 0 && <hr className="w-full border-t border-[#1c1c1c]/8 dark:border-white/10" />}
+                  {activeSection === 'All' && index > 0 && <hr className="w-full border-t border-slate-200 dark:border-slate-800" />}
                   <section className="relative" aria-labelledby={`section-heading-${section}`}>
                     <div className="flex items-center justify-between mb-4">
-                      <h2 id={`section-heading-${section}`} className="text-xl font-serif-display italic font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1] flex items-center gap-3">
+                      <h2 id={`section-heading-${section}`} className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
                         {section}
-                        <span className="text-[10px] font-mono-ui font-medium text-zinc-500 dark:text-zinc-400 bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-md border border-black/5 dark:border-white/10">
+                        <span className="text-[11px] font-mono-ui font-medium text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-md border border-black/5 dark:border-white/10">
                           {sectionBookmarks.length}
                         </span>
                       </h2>
                       {isEditMode && section !== 'General' && (
                         <button 
                           onClick={() => handleDeleteSection(section, activeSection, setActiveSection)}
-                          className="text-[10px] font-mono-ui text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2.5 py-1 rounded-md border border-red-500/20 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500"
+                          className="text-xs font-sans-ui text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 px-2.5 py-1 rounded-md border border-red-500/20 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500"
                         >
-                          DELETE SECTION
+                          Delete section
                         </button>
                       )}
                     </div>
@@ -275,14 +275,14 @@ export default function App() {
                               setAddModalCategory(section);
                               setIsAddModalOpen(true);
                             }}
-                            className={`group flex flex-col items-center justify-start ${currentAddSize.gap} transition-transform active:scale-95 z-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32] rounded-2xl p-1`}
+                            className={`group flex flex-col items-center justify-start ${currentAddSize.gap} transition-transform active:scale-95 z-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] rounded-2xl p-1`}
                             aria-label={`Add new link to ${section}`}
                           >
-                            <div className={`${currentAddSize.container} ios-glass-card border-dashed border-[#1c1c1c]/20 dark:border-white/20 flex items-center justify-center text-[#1c1c1c]/40 dark:text-[#e5e5e1]/40 transition-all group-hover:border-[#c85a32]/50 dark:group-hover:border-[#d36135]/50 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135]`}>
-                              <Plus size={currentAddSize.iconSize} strokeWidth={1.4} />
+                            <div className={`${currentAddSize.container} ios-glass-card border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500 transition-all group-hover:border-[#2563eb]/50 dark:group-hover:border-[#3b82f6]/50 group-hover:text-[#2563eb] dark:group-hover:text-[#3b82f6]`}>
+                              <Plus size={currentAddSize.iconSize} strokeWidth={1.5} />
                             </div>
-                            <span className={`${currentAddSize.text} font-medium text-[#1c1c1c]/50 dark:text-[#e5e5e1]/50 group-hover:text-[#c85a32] dark:group-hover:text-[#d36135] transition-colors`}>
-                              Add Link
+                            <span className={`${currentAddSize.text} font-medium text-slate-500 dark:text-slate-400 group-hover:text-[#2563eb] dark:group-hover:text-[#3b82f6] transition-colors`}>
+                              Add link
                             </span>
                           </button>
                         );
@@ -295,28 +295,29 @@ export default function App() {
         </DndContext>
       </main>
 
-      {/* Understated Human-Crafted Footer */}
-      <footer className="w-full max-w-7xl mt-16 pt-6 pb-4 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono-ui text-zinc-500 dark:text-zinc-400 select-none">
+      {/* Understated Clean Footer */}
+      <footer className="w-full max-w-7xl mt-16 pt-6 pb-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-sans-ui text-slate-500 dark:text-slate-400 select-none">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-zinc-600 dark:text-zinc-300">Bookshelf</span>
-          <span className="opacity-40">•</span>
-          <span>Local-first &amp; offline storage</span>
+          <span className="font-semibold text-slate-700 dark:text-slate-200">Bookshelf</span>
+          <span className="text-slate-300 dark:text-slate-700 font-mono">v1.0.0</span>
+          <span className="text-slate-300 dark:text-slate-700">/</span>
+          <span>Local storage</span>
         </div>
         <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={() => setIsPrivacyModalOpen(true)}
-            className="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors cursor-pointer underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c85a32] rounded px-1"
+            className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors cursor-pointer underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#2563eb] rounded px-1"
           >
-            Privacy Policy
+            Privacy policy
           </button>
-          <span className="opacity-40">•</span>
+          <span className="text-slate-300 dark:text-slate-700">/</span>
           <button
             type="button"
             onClick={() => setIsTermsModalOpen(true)}
-            className="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors cursor-pointer underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c85a32] rounded px-1"
+            className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors cursor-pointer underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#2563eb] rounded px-1"
           >
-            Terms of Service
+            Terms of service
           </button>
         </div>
       </footer>

@@ -41,7 +41,7 @@ export function getFaviconFallbackUrls(url: string, forceRefresh: boolean = fals
 }
 
 const NON_PURPLE_PALETTES = [
-  { bg: 'linear-gradient(135deg, #c85a32 0%, #9e3d1b 100%)', text: '#ffffff' }, // Terracotta
+  { bg: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', text: '#ffffff' }, // Cobalt blue
   { bg: 'linear-gradient(135deg, #2d5a43 0%, #1a3828 100%)', text: '#ffffff' }, // Forest slate
   { bg: 'linear-gradient(135deg, #1e3a5f 0%, #0f233d 100%)', text: '#ffffff' }, // Deep navy
   { bg: 'linear-gradient(135deg, #b46b1a 0%, #874b0c 100%)', text: '#ffffff' }, // Warm bronze

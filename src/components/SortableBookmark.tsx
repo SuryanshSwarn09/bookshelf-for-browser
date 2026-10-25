@@ -165,7 +165,7 @@ function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconS
 
   return (
     <>
-      <div className={`relative ${currentSize.container} ios-glass-card overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-active:scale-95 ${isDragging ? 'shadow-2xl border-[#c85a32]/40 dark:border-[#d36135]/40 scale-110' : ''}`}>
+      <div className={`relative ${currentSize.container} ios-glass-card overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-active:scale-95 ${isDragging ? 'shadow-2xl border-[#2563eb]/60 dark:border-[#3b82f6]/60 scale-110' : ''}`}>
         {!allImagesFailed ? (
           <img 
             src={activeSrc} 
@@ -185,7 +185,7 @@ function BookmarkContent({ bookmark, isEditMode, isDragging, onImageError, iconS
           </div>
         )}
       </div>
-      <span className={`${currentSize.text} font-medium text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 group-hover:text-[#1c1c1c] dark:group-hover:text-white text-center w-full truncate px-1.5 select-none transition-colors duration-200`}>
+      <span className={`${currentSize.text} font-medium text-slate-800 dark:text-slate-200 group-hover:text-slate-950 dark:group-hover:text-white text-center w-full truncate px-1.5 select-none transition-colors duration-200`}>
         {bookmark.title || extractDomain(bookmark.url) || 'Unnamed'}
       </span>
     </>

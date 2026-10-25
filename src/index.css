@@ -3,25 +3,25 @@
 @layer base {
   :root {
     color-scheme: light dark;
-    --bg-light: #faf8f5;
-    --text-light: #1c1c1c;
-    --border-light: rgba(28, 28, 28, 0.08);
-    --border-hover-light: rgba(28, 28, 28, 0.16);
-    --accent-light: #c85a32;
-    --accent-hover-light: #b04925;
+    --bg-light: #f8fafc;
+    --text-light: #0f172a;
+    --border-light: rgba(15, 23, 42, 0.08);
+    --border-hover-light: rgba(15, 23, 42, 0.16);
+    --accent-light: #2563eb;
+    --accent-hover-light: #1d4ed8;
 
-    --bg-dark: #121314;
-    --text-dark: #e5e5e1;
-    --border-dark: rgba(229, 229, 225, 0.08);
-    --border-hover-dark: rgba(229, 229, 225, 0.16);
-    --accent-dark: #d36135;
-    --accent-hover-dark: #e07248;
+    --bg-dark: #0c0d12;
+    --text-dark: #f8fafc;
+    --border-dark: rgba(255, 255, 255, 0.08);
+    --border-hover-dark: rgba(255, 255, 255, 0.16);
+    --accent-dark: #3b82f6;
+    --accent-hover-dark: #60a5fa;
   }
 
   body {
     background-color: var(--bg-light);
     color: var(--text-light);
-    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     @apply antialiased transition-colors duration-300;
   }
 
@@ -85,17 +85,17 @@
   }
 }
 
-/* Custom fonts utility classes */
+/* Typography Utility Classes */
 .font-serif-display {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .font-sans-ui {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .font-mono-ui {
-  font-family: 'Poppins', sans-serif;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* Styled animations for card entrance */
@@ -178,15 +178,15 @@
 
 .ios-glass-card:hover {
   background: rgba(255, 255, 255, 0.75);
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 12px 32px 0 rgba(200, 90, 50, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: rgba(37, 99, 235, 0.25);
+  box-shadow: 0 10px 28px 0 rgba(37, 99, 235, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 @media (prefers-color-scheme: dark) {
   .ios-glass-card:hover {
     background: rgba(35, 38, 46, 0.75);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 12px 36px 0 rgba(211, 97, 53, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 10px 32px 0 rgba(59, 130, 246, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -271,15 +271,15 @@ body.theme-porcelain .ios-glass-modal {
 
 .ios-glass-input:focus-within,
 .ios-glass-input:focus {
-  border-color: #c85a32;
-  box-shadow: 0 0 0 2px rgba(200, 90, 50, 0.18), inset 0 1px 1px rgba(0, 0, 0, 0.02);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18), inset 0 1px 1px rgba(0, 0, 0, 0.02);
 }
 
 @media (prefers-color-scheme: dark) {
   .ios-glass-input:focus-within,
   .ios-glass-input:focus {
-    border-color: #d36135;
-    box-shadow: 0 0 0 2px rgba(211, 97, 53, 0.25), inset 0 1px 1px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25), inset 0 1px 1px rgba(0, 0, 0, 0.1);
   }
 }
 

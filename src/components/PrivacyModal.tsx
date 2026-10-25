@@ -24,21 +24,21 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
         {/* Header */}
         <div className="px-6 py-5 flex items-center justify-between border-b border-black/5 dark:border-white/10 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#c85a32]/10 dark:bg-[#d36135]/20 flex items-center justify-center text-[#c85a32] dark:text-[#d36135]">
+            <div className="w-8 h-8 rounded-lg bg-[#2563eb]/10 dark:bg-[#3b82f6]/20 flex items-center justify-center text-[#2563eb] dark:text-[#3b82f6]">
               <ShieldCheck size={16} />
             </div>
             <div>
-              <h2 id="privacy-policy-title" className="text-xl font-serif-display font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1]">
-                Privacy Policy
+              <h2 id="privacy-policy-title" className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+                Privacy policy
               </h2>
-              <p className="text-[11px] font-mono-ui text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Local-first architecture and transparent data guarantees
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
+            className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]"
             aria-label="Close modal"
           >
             <X size={16} />
@@ -48,7 +48,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
         {/* Content Body */}
         <div className="p-6 overflow-y-auto space-y-5 text-xs text-[#1c1c1c]/90 dark:text-[#e5e5e1]/90 font-sans-ui leading-relaxed">
           <div className="p-3.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex items-start gap-3">
-            <Lock size={16} className="text-[#c85a32] dark:text-[#d36135] shrink-0 mt-0.5" />
+            <Lock size={16} className="text-[#2563eb] dark:text-[#3b82f6] shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-xs text-[#1c1c1c] dark:text-white">The Core Principle</p>
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
@@ -118,9 +118,9 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-lg bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white text-xs font-mono-ui font-semibold shadow-sm transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
+            className="px-5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] dark:bg-[#3b82f6] dark:hover:bg-[#2563eb] text-white text-xs font-sans-ui font-medium shadow-sm transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]"
           >
-            CLOSE
+            Close
           </button>
         </div>
       </div>

@@ -54,21 +54,21 @@ export const SectionModal: React.FC<SectionModalProps> = ({
         {/* Header Bar */}
         <div className="px-6 py-5 flex items-center justify-between border-b border-black/5 dark:border-white/10">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#c85a32]/10 dark:bg-[#d36135]/20 flex items-center justify-center text-[#c85a32] dark:text-[#d36135]">
+            <div className="w-8 h-8 rounded-lg bg-[#2563eb]/10 dark:bg-[#3b82f6]/20 flex items-center justify-center text-[#2563eb] dark:text-[#3b82f6]">
               <FolderPlus size={16} />
             </div>
             <div>
-              <h2 id="create-section-title" className="text-xl font-serif-display font-medium tracking-tight text-[#1c1c1c] dark:text-[#e5e5e1]">
-                New Category
+              <h2 id="create-section-title" className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+                New category
               </h2>
-              <p className="text-[11px] font-mono-ui text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Organize shortcuts into workflow sections
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c85a32]"
+            className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-lg transition-all active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]"
             aria-label="Close modal"
           >
             <X size={16} />
@@ -77,25 +77,25 @@ export const SectionModal: React.FC<SectionModalProps> = ({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-[11px] font-sans-ui text-[#1c1c1c]/80 dark:text-[#e5e5e1]/90 mb-1.5 uppercase tracking-wider font-semibold">
-              Category Name <span className="text-[#c85a32]">*</span>
+            <label className="block text-xs font-sans-ui text-slate-700 dark:text-slate-300 mb-1.5 font-medium">
+              Category name <span className="text-[#2563eb]">*</span>
             </label>
             <div className="relative flex items-center">
-              <FolderPlus size={15} className="absolute left-3.5 text-zinc-400 pointer-events-none" />
+              <FolderPlus size={15} className="absolute left-3.5 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 required
                 autoFocus
-                placeholder="e.g. Work, Dev Tools, Recipes"
+                placeholder="e.g. Work, Dev Tools, Reference"
                 value={sectionName}
                 onChange={(e) => setSectionName(e.target.value)}
-                className="w-full pl-10 pr-9 py-2.5 rounded-lg ios-glass-input text-[#1c1c1c] dark:text-[#e5e5e1] placeholder:text-zinc-400 dark:placeholder:text-zinc-500 font-sans-ui text-xs outline-none"
+                className="w-full pl-10 pr-9 py-2.5 rounded-lg ios-glass-input text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans-ui text-xs outline-none"
               />
               {sectionName && (
                 <button
                   type="button"
                   onClick={() => setSectionName('')}
-                  className="absolute right-3 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer rounded"
+                  className="absolute right-3 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer rounded"
                   title="Clear"
                 >
                   <X size={13} />
@@ -106,9 +106,8 @@ export const SectionModal: React.FC<SectionModalProps> = ({
 
           {/* Quick Suggestions Chips */}
           <div>
-            <div className="flex items-center gap-1 text-[11px] font-sans-ui text-zinc-500 dark:text-zinc-400 mb-2 font-medium">
-              <Sparkles size={11} className="text-[#c85a32]" />
-              <span>Quick suggestions:</span>
+            <div className="flex items-center gap-1.5 text-xs font-sans-ui text-slate-500 dark:text-slate-400 mb-2 font-medium">
+              <span>Suggestions:</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {PRESET_SUGGESTIONS.map((preset) => (
@@ -116,10 +115,10 @@ export const SectionModal: React.FC<SectionModalProps> = ({
                   key={preset}
                   type="button"
                   onClick={() => handleSelectPreset(preset)}
-                  className={`px-3 py-1 rounded-lg text-[11px] font-mono-ui transition-all cursor-pointer border active:scale-95 ${
+                  className={`px-3 py-1 rounded-lg text-xs font-sans-ui transition-all cursor-pointer border active:scale-95 ${
                     sectionName === preset
-                      ? 'bg-[#c85a32] text-white border-transparent font-bold'
-                      : 'bg-black/[0.03] dark:bg-white/[0.04] border-black/5 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:border-[#c85a32]/50'
+                      ? 'bg-[#2563eb] text-white border-transparent font-medium shadow-sm'
+                      : 'bg-black/[0.03] dark:bg-white/[0.04] border-black/5 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-[#2563eb]/40'
                   }`}
                 >
                   {preset}
@@ -133,17 +132,16 @@ export const SectionModal: React.FC<SectionModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-lg ios-glass-pill text-xs font-mono-ui font-semibold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 text-center"
+              className="flex-1 py-2.5 px-4 rounded-lg ios-glass-pill text-xs font-sans-ui font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer active:scale-95 text-center"
             >
-              CANCEL
+              Cancel
             </button>
             <button
               type="submit"
               disabled={!sectionName.trim()}
-              className="flex-[2] py-2.5 px-4 bg-[#c85a32] hover:bg-[#b04925] dark:bg-[#d36135] dark:hover:bg-[#e07248] text-white rounded-lg font-sans-ui text-xs font-semibold shadow-md active:scale-98 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#c85a32]"
+              className="flex-[2] py-2.5 px-4 bg-[#2563eb] hover:bg-[#1d4ed8] dark:bg-[#3b82f6] dark:hover:bg-[#2563eb] text-white rounded-lg font-sans-ui text-xs font-medium shadow-sm active:scale-98 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#2563eb]"
             >
-              <span>CREATE CATEGORY</span>
-              <ArrowRight size={14} />
+              <span>Create category</span>
             </button>
           </div>
         </form>
